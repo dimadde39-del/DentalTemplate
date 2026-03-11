@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { supabase } from "@/lib/supabase";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface BookingModalProps {
 
 export function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [formData, setFormData] = useState({ name: "", phone: "", service: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errors, setErrors] = useState({ name: false, phone: false });
 
   const validate = () => {
@@ -24,16 +25,28 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
     return !newErrors.name && !newErrors.phone;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
     setStatus("loading");
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.from('leads').insert([
+        {
+          name: formData.name,
+          phone: formData.phone,
+          service: formData.service || 'General Inquiry',
+          status: 'new'
+        }
+      ]);
+
+      if (error) throw error;
       setStatus("success");
-    }, 1500);
+    } catch (err) {
+      console.error("Failed to submit lead", err);
+      setStatus("error");
+    }
   };
 
   const handleClose = () => {
@@ -45,6 +58,7 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
       setErrors({ name: false, phone: false });
     }, 300);
   };
+
 
   return (
     <AnimatePresence>

@@ -1,13 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, Star } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { BookingModal } from "@/components/BookingModal";
 
 export function Hero() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background pt-20">
@@ -81,7 +86,7 @@ export function Hero() {
             className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto"
           >
             <button
-              onClick={() => scrollToSection("booking")}
+              onClick={() => setIsModalOpen(true)}
               className="group inline-flex h-12 md:h-14 items-center justify-center rounded-full bg-primary px-8 text-sm md:text-base font-semibold text-white shadow-xl shadow-primary/25 transition-all hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <Calendar className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
@@ -121,6 +126,8 @@ export function Hero() {
           </motion.div>
         </div>
       </div>
+
+      <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 }

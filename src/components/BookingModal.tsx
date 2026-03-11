@@ -32,12 +32,26 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
     setStatus("loading");
     
     try {
+      // Collect UTM parameters from current URL
+      let utmParams = {};
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        utmParams = {
+          utm_source: urlParams.get('utm_source') || null,
+          utm_medium: urlParams.get('utm_medium') || null,
+          utm_campaign: urlParams.get('utm_campaign') || null,
+          utm_term: urlParams.get('utm_term') || null,
+          utm_content: urlParams.get('utm_content') || null,
+        };
+      }
+
       const { error } = await supabase.from('leads').insert([
         {
           name: formData.name,
           phone: formData.phone,
           service: formData.service || 'General Inquiry',
-          status: 'new'
+          status: 'new',
+          ...utmParams
         }
       ]);
 

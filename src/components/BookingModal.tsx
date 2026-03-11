@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
 import { siteConfig } from "@/config/site";
@@ -12,6 +12,14 @@ export function BookingModal() {
   const [formData, setFormData] = useState({ name: "", phone: "", service: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errors, setErrors] = useState({ name: false, phone: false });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const validate = () => {
     const newErrors = {
@@ -81,28 +89,33 @@ export function BookingModal() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 z-50 bg-background/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md"
           />
 
           {/* Modal Content */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ type: "spring", duration: 0.5 }}
-              className="w-full max-w-lg overflow-hidden rounded-[2rem] border border-foreground/10 bg-background/60 backdrop-blur-xl shadow-2xl pointer-events-auto flex flex-col"
+              initial={isMobile ? { opacity: 0, y: "100%" } : { opacity: 0, y: 50, scale: 0.95 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={isMobile ? { opacity: 0, y: "100%" } : { opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="w-full max-w-lg overflow-hidden rounded-t-[2rem] sm:rounded-b-[2rem] sm:rounded-t-[2rem] border-t sm:border border-foreground/10 bg-background/80 backdrop-blur-2xl shadow-2xl pointer-events-auto flex flex-col max-h-[90vh]"
             >
+              {/* Mobile Drag Indicator */}
+              <div className="w-full flex justify-center pt-3 pb-1 sm:hidden relative z-10 cursor-grab active:cursor-grabbing" onClick={handleClose}>
+                <div className="w-12 h-1.5 bg-foreground/20 rounded-full" />
+              </div>
+
               {/* Header */}
-              <div className="relative border-b border-foreground/5 p-6 md:p-8">
+              <div className="relative border-b border-foreground/5 p-6 md:p-8 pt-4 sm:pt-8">
                 <button
                   onClick={handleClose}
-                  className="absolute right-6 top-6 md:right-8 md:top-8 text-foreground/50 hover:text-foreground transition-colors"
+                  className="absolute right-4 top-4 sm:right-6 sm:top-6 flex h-11 w-11 items-center justify-center rounded-full bg-foreground/5 text-foreground/50 hover:bg-foreground/10 hover:text-foreground transition-colors"
                   aria-label="Close modal"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5" />
                 </button>
-                <h3 className="text-2xl font-bold tracking-tight text-foreground">
+                <h3 className="text-2xl font-bold tracking-tight text-foreground pr-10">
                   {status === "success" ? "Request Received" : "Book an Appointment"}
                 </h3>
                 <p className="text-foreground/60 mt-2">
@@ -149,7 +162,7 @@ export function BookingModal() {
                           if (errors.name) setErrors({ ...errors, name: false });
                         }}
                         placeholder="John Doe"
-                        className={`w-full rounded-xl border bg-background/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
+                        className={`w-full rounded-xl border bg-background/50 px-5 py-4 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
                           errors.name ? "border-red-500/50 focus:border-red-500" : "border-foreground/10 focus:border-primary"
                         }`}
                       />
@@ -168,7 +181,7 @@ export function BookingModal() {
                           if (errors.phone) setErrors({ ...errors, phone: false });
                         }}
                         placeholder="+1 (555) 000-0000"
-                        className={`w-full rounded-xl border bg-background/50 px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
+                        className={`w-full rounded-xl border bg-background/50 px-5 py-4 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
                           errors.phone ? "border-red-500/50 focus:border-red-500" : "border-foreground/10 focus:border-primary"
                         }`}
                       />
@@ -183,7 +196,7 @@ export function BookingModal() {
                           id="service"
                           value={formData.service}
                           onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                          className="w-full appearance-none rounded-xl border border-foreground/10 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors"
+                          className="w-full appearance-none rounded-xl border border-foreground/10 bg-background/50 px-5 py-4 text-base sm:text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors"
                         >
                           <option value="">General Inquiry / Not Sure</option>
                           {siteConfig.defaultServices.map((service) => (
@@ -204,7 +217,7 @@ export function BookingModal() {
                       <button
                         type="submit"
                         disabled={status === "loading"}
-                        className="group relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-primary px-8 py-3.5 font-bold text-white shadow-[0_0_20px_rgb(0,0,0,0.1)] transition-all hover:scale-[1.02] hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-70 disabled:hover:scale-100"
+                        className="group relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-primary px-8 py-4 font-bold text-base text-white shadow-[0_0_20px_rgb(0,0,0,0.1)] transition-all hover:scale-[1.02] hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-70 disabled:hover:scale-100"
                       >
                         {status === "loading" ? (
                           <Loader2 className="h-5 w-5 animate-spin" />

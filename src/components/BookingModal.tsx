@@ -5,13 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { supabase } from "@/lib/supabase";
+import { useBooking } from "@/context/BookingContext";
 
-interface BookingModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export function BookingModal({ isOpen, onClose }: BookingModalProps) {
+export function BookingModal() {
+  const { isOpen, closeModal } = useBooking();
   const [formData, setFormData] = useState({ name: "", phone: "", service: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errors, setErrors] = useState({ name: false, phone: false });
@@ -64,7 +61,7 @@ export function BookingModal({ isOpen, onClose }: BookingModalProps) {
   };
 
   const handleClose = () => {
-    onClose();
+    closeModal();
     // Reset state after animation finishes
     setTimeout(() => {
       setStatus("idle");

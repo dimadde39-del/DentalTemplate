@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { siteConfig } from "@/config/site";
+import { BookingProvider } from "@/context/BookingContext";
+import { Header } from "@/components/Header";
+import { BookingModal } from "@/components/BookingModal";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,7 +36,11 @@ export default function RootLayout({
           } as React.CSSProperties
         }
       >
-        {children}
+        <BookingProvider>
+          <Header />
+          {children}
+          <BookingModal />
+        </BookingProvider>
       </body>
     </html>
   );

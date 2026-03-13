@@ -9,6 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 
+import { supabase } from "@/lib/supabase";
+
 const bookingSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Please enter a valid phone number"),
@@ -32,16 +34,19 @@ export function BookingModal() {
   });
 
   const onSubmit = async (data: BookingFormData) => {
-    // TODO: Future RPC integration:
-    // await supabase.rpc('insert_public_lead', { 
-    //   p_slug: 'tenant-slug', 
-    //   p_name: data.name, 
-    //   p_phone: data.phone, 
-    //   p_service: data.service 
-    // });
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Call RPC to insert the lead safely
+    const { error } = await supabase.rpc('insert_public_lead', { 
+      p_slug: 'tenant-slug', // Hardcoded stub for now
+      p_name: data.name, 
+      p_phone: data.phone, 
+      p_service: data.service 
+    });
+
+    if (error) {
+      console.error("Error inserting lead:", error);
+      // Handle error accordingly (toast, etc)
+      return;
+    }
     
     setSubmittedName(data.name);
     setIsSuccess(true);

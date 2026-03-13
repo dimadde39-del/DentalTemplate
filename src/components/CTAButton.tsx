@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useBooking } from "@/context/BookingContext";
 
 export function CTAButton({
   children,
@@ -9,14 +10,13 @@ export function CTAButton({
   children: React.ReactNode;
   onClick?: () => void;
 }) {
+  const { openBooking } = useBooking();
+
   const handleClick = () => {
     if (onClick) {
       onClick();
     } else {
-      const bookingSection = document.getElementById("booking");
-      if (bookingSection) {
-        bookingSection.scrollIntoView({ behavior: "smooth" });
-      }
+      openBooking();
     }
   };
 

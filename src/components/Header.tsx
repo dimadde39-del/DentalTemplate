@@ -3,12 +3,10 @@
 import { useState } from "react";
 import { useScroll, useMotionValueEvent, useTransform, motion } from "framer-motion";
 import { siteConfig } from "@/config/site";
+import { useBooking } from "@/context/BookingContext";
 
-interface HeaderProps {
-  readonly openModal: () => void;
-}
-
-export function Header({ openModal }: HeaderProps) {
+export function Header() {
+  const { openBooking } = useBooking();
   const { scrollY } = useScroll();
   const height = useTransform(scrollY, [0, 20], ["80px", "64px"]);
   const logoScale = useTransform(scrollY, [0, 20], [1, 0.9]);
@@ -40,7 +38,7 @@ export function Header({ openModal }: HeaderProps) {
         </motion.div>
 
         <button
-          onClick={openModal}
+          onClick={openBooking}
           className="bg-[var(--color-primary)] text-white px-6 py-2.5 rounded-full font-bold text-sm shadow hover:shadow-md transition-all active:scale-[0.98]"
         >
           Book Now

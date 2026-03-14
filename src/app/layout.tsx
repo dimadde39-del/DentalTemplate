@@ -78,7 +78,7 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <BookingProvider>
-          <Header openModal={() => {}} />
+          <Header />
           {children}
           <BookingModal />
         </BookingProvider>

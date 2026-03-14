@@ -4,6 +4,7 @@ export interface SiteConfig {
   contactPhone: string;
   contactEmail: string;
   defaultServices: string[];
+  siteUrl?: string;
   googleMapsUrl?: string;
   instagramUrl?: string;
   facebookUrl?: string;
@@ -20,6 +21,7 @@ export const siteConfig: SiteConfig = {
     "Orthodontics",
     "Dental Implants",
   ],
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   googleMapsUrl: process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL,
   instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL,
   facebookUrl: process.env.NEXT_PUBLIC_FACEBOOK_URL,

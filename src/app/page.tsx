@@ -1,7 +1,9 @@
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
-import { Testimonials } from "@/components/Testimonials";
-import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
+import dynamic from "next/dynamic";
+
+const BeforeAfterSlider = dynamic(() => import("@/components/BeforeAfterSlider").then(mod => mod.BeforeAfterSlider), { ssr: false });
+const Testimonials = dynamic(() => import("@/components/Testimonials").then(mod => mod.Testimonials), { ssr: false });
 
 export default function Home() {
   return (

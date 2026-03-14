@@ -8,8 +8,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
-
 import { supabase } from "@/lib/supabase";
+
+const OVERLAY_VARIANTS = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+} as const;
+
+const PANEL_VARIANTS = {
+  initial: { opacity: 0, y: "100%" },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: "100%" },
+} as const;
 
 const bookingSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -34,9 +45,8 @@ export function BookingModal() {
   });
 
   const onSubmit = async (data: BookingFormData) => {
-    // Call RPC to insert the lead safely
     const { error } = await supabase.rpc('insert_public_lead', { 
-      p_slug: 'tenant-slug', // Hardcoded stub for now
+      p_slug: 'tenant-slug',
       p_name: data.name, 
       p_phone: data.phone, 
       p_service: data.service 
@@ -44,7 +54,6 @@ export function BookingModal() {
 
     if (error) {
       console.error("Error inserting lead:", error);
-      // Handle error accordingly (toast, etc)
       return;
     }
     
@@ -56,40 +65,42 @@ export function BookingModal() {
       setTimeout(() => {
         setIsSuccess(false);
         reset();
-      }, 300); // Wait for modal close animation
+      }, 300);
     }, 3000);
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
-        <>
+        <motion.div
+          variants={OVERLAY_VARIANTS}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          onClick={closeBooking}
+          className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm"
+        >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeBooking}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity"
-          />
-          <motion.div
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
+            variants={PANEL_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-x-0 bottom-0 z-50 w-full md:inset-x-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md bg-white dark:bg-zinc-900 rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden h-[90vh] md:h-auto max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            className="h-[90vh] md:h-auto w-full md:max-w-lg bg-white dark:bg-zinc-900 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-y-auto flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
               <h2 className="text-xl font-bold font-sans">Book Appointment</h2>
               <button
                 onClick={closeBooking}
-                className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                 aria-label="Close"
               >
                 <X className="w-5 h-5 text-zinc-500" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto flex-1">
+            <div className="p-6 flex-1 flex flex-col">
               {isSuccess ? (
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -111,7 +122,7 @@ export function BookingModal() {
                     <input
                       {...register("name")}
                       type="text"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-[16px] outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
                       placeholder="John Doe"
                     />
                     {errors.name && (
@@ -126,7 +137,7 @@ export function BookingModal() {
                     <input
                       {...register("phone")}
                       type="tel"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-[16px] outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
                       placeholder="+1 (555) 000-0000"
                     />
                     {errors.phone && (
@@ -140,7 +151,7 @@ export function BookingModal() {
                     </label>
                     <select
                       {...register("service")}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-[16px] outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all appearance-none"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all appearance-none"
                     >
                       <option value="">Select a service...</option>
                       {siteConfig.defaultServices.map((service) => (
@@ -158,7 +169,7 @@ export function BookingModal() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full min-h-[48px] bg-[var(--color-primary)] text-white rounded-xl font-bold text-[16px] hover:opacity-90 active:scale-[0.98] disabled:opacity-70 transition-all flex items-center justify-center"
+                      className="w-full min-h-[48px] bg-[var(--color-primary)] text-white rounded-xl font-bold text-base hover:opacity-90 active:scale-[0.98] disabled:opacity-70 transition-all flex items-center justify-center"
                     >
                       {isSubmitting ? (
                         <motion.div
@@ -175,7 +186,7 @@ export function BookingModal() {
               )}
             </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );

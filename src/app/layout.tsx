@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { siteConfig } from "@/config/site";
 import { BookingProvider } from "@/context/BookingContext";
 import { BookingModal } from "@/components/BookingModal";
 import { Header } from "@/components/Header";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import { getSiteConfig } from "@/lib/tenant";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,9 +21,9 @@ const geistMono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
   const slug = headersList.get('x-tenant-slug') ?? 'default';
+  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
   
-  // Mock config fetch for tenant. In production, await getSiteConfig(slug)
-  const config = siteConfig;
+  const config = await getSiteConfig(slug);
 
   return {
     title: {
@@ -54,7 +55,9 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   const slug = headersList.get('x-tenant-slug') ?? 'default';
-  const config = siteConfig; // would fetch dynamically based on slug
+  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
+  
+  const config = await getSiteConfig(slug);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -78,9 +81,9 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <BookingProvider>
-          <Header />
+          <Header config={config} />
           {children}
-          <BookingModal />
+          <BookingModal config={config} slug={slug} />
         </BookingProvider>
       </body>
     </html>

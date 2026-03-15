@@ -1,8 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import { siteConfig } from "@/config/site";
 import type { LeadStatus } from "@/components/StatusToggle";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import { getSiteConfig } from "@/lib/tenant";
 import { Suspense } from "react";
 import LeadSkeleton from "@/components/LeadSkeleton";
 import { LeadTableClient } from "@/components/LeadTableClient";
@@ -47,15 +48,27 @@ async function LeadsData({ tenantId }: { tenantId: string }) {
 
 export default async function AdminPage() {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const tenantId = "tenant-slug";
+  const slug = headersList.get('x-tenant-slug') ?? 'default';
+  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
+  
+  const config = await getSiteConfig(slug);
+
+  const { data: clinic } = await supabase
+    .from('clinics')
+    .select('id')
+    .eq('slug', slug)
+    .single();
+
+  if (!clinic) notFound();
+
+  const tenantId = clinic.id;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-6 md:p-12">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-            {siteConfig.clinicName} CRM
+            {config.clinicName} CRM
           </h1>
           <p className="text-zinc-500 mt-2">Manage your patient leads and appointment requests.</p>
         </header>

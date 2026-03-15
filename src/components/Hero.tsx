@@ -1,9 +1,15 @@
-import { siteConfig } from "@/config/site";
 import { CTAButton } from "./CTAButton";
 import { FloatingBlobs } from "./FloatingBlobs";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import { getSiteConfig } from "@/lib/tenant";
 
 export async function Hero() {
-  const config = siteConfig;
+  const headersList = await headers();
+  const slug = headersList.get('x-tenant-slug') ?? 'default';
+  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
+  
+  const config = await getSiteConfig(slug);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">

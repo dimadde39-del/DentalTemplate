@@ -4,12 +4,15 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { MoveHorizontal } from "lucide-react";
 
+import { SiteConfig } from "@/config/site";
+
 interface SliderProps {
   readonly beforeSrc: string;
   readonly afterSrc: string;
+  readonly config: SiteConfig;
 }
 
-export function BeforeAfterSlider({ beforeSrc, afterSrc }: SliderProps) {
+export function BeforeAfterSlider({ beforeSrc, afterSrc, config }: SliderProps) {
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
   const afterImageRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<HTMLDivElement>(null);

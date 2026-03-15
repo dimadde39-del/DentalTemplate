@@ -1,7 +1,7 @@
 "use client";
 
 import { useBooking } from "@/context/BookingContext";
-import { siteConfig } from "@/config/site";
+import { SiteConfig } from "@/config/site";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -30,7 +30,12 @@ const bookingSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingSchema>;
 
-export function BookingModal() {
+interface BookingModalProps {
+  readonly config: SiteConfig;
+  readonly slug: string;
+}
+
+export function BookingModal({ config, slug }: BookingModalProps) {
   const { isOpen, closeBooking } = useBooking();
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
@@ -46,7 +51,7 @@ export function BookingModal() {
 
   const onSubmit = async (data: BookingFormData) => {
     const { error } = await supabase.rpc('insert_public_lead', { 
-      p_slug: 'tenant-slug',
+      p_slug: slug,
       p_name: data.name, 
       p_phone: data.phone, 
       p_service: data.service 
@@ -154,7 +159,7 @@ export function BookingModal() {
                       className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all appearance-none"
                     >
                       <option value="">Select a service...</option>
-                      {siteConfig.defaultServices.map((service) => (
+                      {config.defaultServices.map((service) => (
                         <option key={service} value={service}>
                           {service}
                         </option>

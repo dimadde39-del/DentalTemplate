@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import { useScroll, useMotionValueEvent, useTransform, motion } from "framer-motion";
-import { siteConfig } from "@/config/site";
+import { SiteConfig } from "@/config/site";
 import { useBooking } from "@/context/BookingContext";
 
-export function Header() {
+interface HeaderProps {
+  readonly config: SiteConfig;
+}
+
+export function Header({ config }: HeaderProps) {
   const { openBooking } = useBooking();
   const { scrollY } = useScroll();
   const height = useTransform(scrollY, [0, 20], ["80px", "64px"]);
@@ -33,7 +37,7 @@ export function Header() {
       <div className="container mx-auto px-4 flex items-center justify-between h-full">
         <motion.div style={{ scale: logoScale }} className="origin-left">
           <span className="text-2xl font-extrabold tracking-tight text-foreground">
-            {siteConfig.clinicName}
+            {config.clinicName}
           </span>
         </motion.div>
 

@@ -1,12 +1,14 @@
 {
   "name": "dental-template",
   "version": "0.1.0",
+  "description": "Multi-tenant white-label platform for dental clinics",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "onboard": "tsx scripts/onboard-new-clinic.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -19,7 +21,6 @@
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.2",
     "tailwind-merge": "^3.5.0",
-    "yargs": "^18.0.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -27,9 +28,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/yargs": "^17.0.35",
+    "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "yargs": "^18.0.0"
   }
 }

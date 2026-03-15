@@ -1,8 +1,16 @@
-import { siteConfig } from "@/config/site";
 import { ServiceCard } from "./atoms/ServiceCard";
 import { Sparkles, Activity, ShieldCheck, Heart } from "lucide-react";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import { getSiteConfig } from "@/lib/tenant";
 
-export function Services() {
+export async function Services() {
+  const headersList = await headers();
+  const slug = headersList.get('x-tenant-slug') ?? 'default';
+  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
+  
+  const config = await getSiteConfig(slug);
+
   const icons = [
     <Sparkles key="1" className="w-8 h-8" />,
     <Activity key="2" className="w-8 h-8" />,
@@ -26,7 +34,7 @@ export function Services() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {siteConfig.defaultServices.map((service, index) => (
+          {config.defaultServices.map((service, index) => (
             <div
               key={service}
               className={

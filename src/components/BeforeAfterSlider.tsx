@@ -70,7 +70,7 @@ export function BeforeAfterSlider({ beforeSrc, afterSrc, config }: SliderProps) 
         fill
         className="object-cover pointer-events-none"
         sizes="(max-width: 768px) 100vw, 50vw"
-        loading="lazy"
+        priority={true}
       />
 
       <div
@@ -84,7 +84,7 @@ export function BeforeAfterSlider({ beforeSrc, afterSrc, config }: SliderProps) 
           fill
           className="object-cover pointer-events-none"
           sizes="(max-width: 768px) 100vw, 50vw"
-          loading="lazy"
+          priority={true}
         />
       </div>
 

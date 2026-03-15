@@ -1,4 +1,5 @@
 import { CTAButton } from "./CTAButton";
+import Image from "next/image";
 import { FloatingBlobs } from "./FloatingBlobs";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -14,6 +15,16 @@ export async function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
       <FloatingBlobs />
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=1920"
+          alt="Modern Dental Clinic"
+          fill
+          className="object-cover opacity-10 dark:opacity-20 pointer-events-none"
+          priority={true}
+          sizes="100vw"
+        />
+      </div>
       
       <div className="container mx-auto px-4 z-10 text-center">
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-foreground">

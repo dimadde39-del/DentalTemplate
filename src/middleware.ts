@@ -21,11 +21,11 @@ export async function middleware(request: NextRequest) {
 
   // Protect /admin routes using @supabase/ssr
   let supabaseResponse = NextResponse.next();
-  // We recreate response if no slug check intercepts it, but slug checks happen earlier or later?
-  // We should do tenant routing first so that we don't break tenant URLs.
+  // Strip incoming tenant spoofing headers before setting our own
+  const headers = new Headers(request.headers);
+  headers.delete('x-tenant-slug');
   
   if (slug) {
-    const headers = new Headers(request.headers);
     headers.set('x-tenant-slug', slug);
     supabaseResponse = NextResponse.next({ request: { headers } });
   } else if (url.pathname.startsWith('/clinic/') || hostname.includes('.')) {
@@ -43,10 +43,10 @@ export async function middleware(request: NextRequest) {
             return request.cookies.getAll()
           },
           setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
-            cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
             // To set cookies on the response, we must have a response object
             if (!slug) {
-              supabaseResponse = NextResponse.next({ request })
+              supabaseResponse = NextResponse.next({ request: { headers } })
             }
             cookiesToSet.forEach(({ name, value, options }) =>
               supabaseResponse.cookies.set(name, value, options)
@@ -56,8 +56,8 @@ export async function middleware(request: NextRequest) {
       }
     )
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

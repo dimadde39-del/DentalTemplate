@@ -1,19 +1,36 @@
-import { supabase } from "@/lib/supabase";
 import type { LeadStatus } from "@/components/StatusToggle";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
 import { Suspense } from "react";
 import LeadSkeleton from "@/components/LeadSkeleton";
 import { LeadTableClient } from "@/components/LeadTableClient";
+import { createServerClient } from "@supabase/ssr";
 
 // Ensure the page is dynamically rendered to access headers
 export const dynamic = "force-dynamic";
 
+// Helper to get authenticated supabase instance
+async function getSupabaseServerClient() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+      },
+    }
+  );
+}
+
 // Server action
 async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
   "use server";
+  const supabase = await getSupabaseServerClient();
   
   const { error } = await supabase
     .from("leads")
@@ -29,6 +46,7 @@ async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
 }
 
 async function LeadsData({ tenantId }: { tenantId: string }) {
+  const supabase = await getSupabaseServerClient();
   const { data: leads, error } = await supabase
     .from("leads")
     .select("*")
@@ -53,6 +71,7 @@ export default async function AdminPage() {
   
   const config = await getSiteConfig(slug);
 
+  const supabase = await getSupabaseServerClient();
   const { data: clinic } = await supabase
     .from('clinics')
     .select('id')

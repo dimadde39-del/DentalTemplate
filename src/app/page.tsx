@@ -5,8 +5,14 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
 
-const BeforeAfterSlider = dynamic(() => import("@/components/BeforeAfterSlider").then(mod => mod.BeforeAfterSlider));
-const Testimonials = dynamic(() => import("@/components/Testimonials").then(mod => mod.Testimonials));
+const BeforeAfterSlider = dynamic(
+  () => import("@/components/BeforeAfterSlider").then(mod => mod.BeforeAfterSlider),
+  { loading: () => <div className="w-full max-w-4xl mx-auto my-12 aspect-[4/3] bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-2xl" /> }
+);
+const Testimonials = dynamic(
+  () => import("@/components/Testimonials").then(mod => mod.Testimonials),
+  { loading: () => <div className="w-full h-96 bg-zinc-50 dark:bg-zinc-950 animate-pulse" /> }
+);
 
 export default async function Home() {
   const headersList = await headers();

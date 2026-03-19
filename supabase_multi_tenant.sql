@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS settings (id uuid PRIMARY KEY DEFAULT gen_random_uuid
 
 CREATE TABLE IF NOT EXISTS profiles (
   user_id uuid REFERENCES auth.users PRIMARY KEY,
-  clinic_id uuid REFERENCES clinics(id) NOT NULL
+  clinic_id uuid REFERENCES clinics(id) NOT NULL,
+  role text NOT NULL DEFAULT 'clinic_admin'
 );
 
 -- 3. ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ТИПОВ (Через динамический SQL, чтобы не было ошибок 42P01)
@@ -52,23 +53,71 @@ BEGIN
     LOOP EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t); END LOOP;
 END $$;
 
--- 5. ПОЛИТИКИ (Удаляем старые и ставим новые)
+-- 5. ФУНКЦИЯ ТЕКУЩЕЙ КЛИНИКИ
+CREATE OR REPLACE FUNCTION current_clinic_id()
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT clinic_id FROM profiles WHERE user_id = auth.uid() LIMIT 1;
+$$;
+
+-- 6. ПОЛИТИКИ (Удаляем старые и ставим строгие)
 DO $$ 
 DECLARE t text;
 BEGIN
     FOR t IN SELECT unnest(ARRAY['leads', 'services', 'doctors', 'reviews', 'settings']) 
     LOOP 
         EXECUTE format('DROP POLICY IF EXISTS "tenant_isolation_%s" ON %I', t, t);
-        EXECUTE format('CREATE POLICY "tenant_isolation_%s" ON %I FOR ALL USING (clinic_id = (SELECT clinic_id FROM profiles WHERE user_id = auth.uid()))', t, t);
-        
         EXECUTE format('DROP POLICY IF EXISTS "public_read_%s" ON %I', t, t);
-        EXECUTE format('CREATE POLICY "public_read_%s" ON %I FOR SELECT USING (true)', t, t);
+        EXECUTE format('DROP POLICY IF EXISTS "tenant_isolation" ON %I', t);
+        EXECUTE format('CREATE POLICY "tenant_isolation" ON %I FOR ALL USING (clinic_id = current_clinic_id()) WITH CHECK (clinic_id = current_clinic_id())', t);
     END LOOP;
 END $$;
 
+-- Публичные данные клиники доступны ТОЛЬКО через RPC (не через прямой SELECT)
+REVOKE SELECT ON services FROM anon;
+REVOKE SELECT ON doctors FROM anon;
+REVOKE SELECT ON reviews FROM anon;
+
+CREATE OR REPLACE FUNCTION get_clinic_public_data(p_slug text)
+RETURNS json
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_clinic_id uuid;
+BEGIN
+  SELECT id INTO v_clinic_id FROM clinics WHERE slug = p_slug;
+  IF v_clinic_id IS NULL THEN
+    RAISE EXCEPTION 'clinic not found: %', p_slug;
+  END IF;
+
+  RETURN json_build_object(
+    'services', COALESCE((
+      SELECT json_agg(row_to_json(s))
+      FROM (SELECT id, name, description, price FROM services WHERE clinic_id = v_clinic_id) s
+    ), '[]'::json),
+    'doctors', COALESCE((
+      SELECT json_agg(row_to_json(d))
+      FROM (SELECT id, name, specialty, photo_url FROM doctors WHERE clinic_id = v_clinic_id) d
+    ), '[]'::json),
+    'reviews', COALESCE((
+      SELECT json_agg(row_to_json(r))
+      FROM (SELECT id, author, rating, comment FROM reviews WHERE clinic_id = v_clinic_id) r
+    ), '[]'::json)
+  );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION get_clinic_public_data(text) TO anon;
+
 -- Специальные политики для clinics и profiles
 DROP POLICY IF EXISTS "tenant_isolation_clinics" ON clinics;
-CREATE POLICY "tenant_isolation_clinics" ON clinics FOR UPDATE USING (id = (SELECT clinic_id FROM profiles WHERE user_id = auth.uid()));
+CREATE POLICY "tenant_isolation_clinics" ON clinics FOR UPDATE USING (id = current_clinic_id());
 DROP POLICY IF EXISTS "public_read_clinics" ON clinics;
 CREATE POLICY "public_read_clinics" ON clinics FOR SELECT USING (true);
 DROP POLICY IF EXISTS "tenant_isolation_profiles" ON profiles;
@@ -89,34 +138,61 @@ CREATE INDEX IF NOT EXISTS idx_clinics_slug ON clinics(slug);
 -- 7. ШАБЛОННАЯ КЛИНИКА
 INSERT INTO clinics (slug, name, primary_color) VALUES ('template', 'Template Clinic', '#0f766e') ON CONFLICT (slug) DO NOTHING;
 
--- 8. АТОМАРНЫЙ ОНБОРДИНГ КЛИНИКИ
+-- 8. ПРОВЕРКА РОЛИ PLATFORM_ADMIN
+CREATE OR REPLACE FUNCTION is_platform_admin()
+RETURNS boolean
+STABLE
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE sql
+AS $$
+  SELECT COALESCE(
+    (SELECT role FROM profiles WHERE user_id = auth.uid()),
+    ''
+  ) = 'platform_admin';
+$$;
+
+-- 9. АТОМАРНЫЙ ОНБОРДИНГ КЛИНИКИ (только platform_admin)
 CREATE OR REPLACE FUNCTION onboard_new_clinic(
   p_template_slug text,
   p_new_slug text,
   p_new_name text,
   p_new_domain text
-) RETURNS void
+) RETURNS uuid
 SECURITY DEFINER
 SET search_path = public
+LANGUAGE plpgsql
 AS $$
-DECLARE v_new_clinic_id uuid;
+DECLARE
+  v_template_id uuid;
+  v_new_clinic_id uuid;
 BEGIN
-  -- copy clinic
+  IF NOT is_platform_admin() THEN
+    RAISE EXCEPTION 'unauthorized: platform_admin role required';
+  END IF;
+
+  SELECT id INTO v_template_id FROM clinics WHERE slug = p_template_slug;
+  IF v_template_id IS NULL THEN
+    RAISE EXCEPTION 'template clinic not found: %', p_template_slug;
+  END IF;
+
   INSERT INTO clinics (slug, name, domain, primary_color, contact_phone, contact_email, google_maps_url, instagram_url, facebook_url)
   SELECT p_new_slug, p_new_name, p_new_domain, primary_color, contact_phone, contact_email, google_maps_url, instagram_url, facebook_url
-  FROM clinics WHERE slug = p_template_slug
+  FROM clinics WHERE id = v_template_id
   RETURNING id INTO v_new_clinic_id;
 
-  -- copy services, doctors, reviews (Columns matched to schema)
-  INSERT INTO services (clinic_id, name, description, price) 
-  SELECT v_new_clinic_id, name, description, price FROM services WHERE clinic_id = (SELECT id FROM clinics WHERE slug = p_template_slug);
-  
-  INSERT INTO doctors (clinic_id, name, specialty, photo_url) 
-  SELECT v_new_clinic_id, name, specialty, photo_url FROM doctors WHERE clinic_id = (SELECT id FROM clinics WHERE slug = p_template_slug);
-  
-  INSERT INTO reviews (clinic_id, author, rating, comment) 
-  SELECT v_new_clinic_id, author, rating, comment FROM reviews WHERE clinic_id = (SELECT id FROM clinics WHERE slug = p_template_slug);
+  INSERT INTO services (clinic_id, name, description, price)
+  SELECT v_new_clinic_id, name, description, price FROM services WHERE clinic_id = v_template_id;
 
-  -- Postgres functions are transactional by default. If any statement fails, the entire function rolls back atomically.
+  INSERT INTO doctors (clinic_id, name, specialty, photo_url)
+  SELECT v_new_clinic_id, name, specialty, photo_url FROM doctors WHERE clinic_id = v_template_id;
+
+  INSERT INTO reviews (clinic_id, author, rating, comment)
+  SELECT v_new_clinic_id, author, rating, comment FROM reviews WHERE clinic_id = v_template_id;
+
+  RETURN v_new_clinic_id;
 END;
-$$ LANGUAGE plpgsql;
+$$;
+
+REVOKE EXECUTE ON FUNCTION onboard_new_clinic(text, text, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION onboard_new_clinic(text, text, text, text) TO authenticated;

@@ -1,41 +1,33 @@
 import type { LeadStatus } from "@/components/StatusToggle";
 import { revalidatePath } from "next/cache";
-import { headers, cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
+import { assertTenantOwnership, getCurrentClinicId } from "@/lib/assertTenantOwnership";
+import { createServerClient } from "@/lib/supabase-server";
 import { Suspense } from "react";
 import LeadSkeleton from "@/components/LeadSkeleton";
 import { LeadTableClient } from "@/components/LeadTableClient";
-import { createServerClient } from "@supabase/ssr";
 
 // Ensure the page is dynamically rendered to access headers
 export const dynamic = "force-dynamic";
 
-// Helper to get authenticated supabase instance
-async function getSupabaseServerClient() {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-      },
-    }
-  );
-}
 
 // Server action
 async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
   "use server";
-  const supabase = await getSupabaseServerClient();
-  
+  const supabase = await createServerClient();
+
+  // Resolve clinic from authenticated user's profile
+  const clinicId = await getCurrentClinicId();
+
+  // Application-layer tenant guard (defense-in-depth on top of RLS)
+  await assertTenantOwnership("leads", leadId, clinicId);
+
   const { error } = await supabase
     .from("leads")
     .update({ status: newStatus })
-    .eq("id", leadId);
+    .eq("id", leadId)
+    .eq("clinic_id", clinicId);
     
   if (error) {
     return { success: false, error: error.message };
@@ -46,7 +38,7 @@ async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
 }
 
 async function LeadsData({ tenantId }: { tenantId: string }) {
-  const supabase = await getSupabaseServerClient();
+  const supabase = await createServerClient();
   const { data: leads, error } = await supabase
     .from("leads")
     .select("*")
@@ -65,22 +57,31 @@ async function LeadsData({ tenantId }: { tenantId: string }) {
 }
 
 export default async function AdminPage() {
-  const headersList = await headers();
-  const slug = headersList.get('x-tenant-slug') ?? 'default';
-  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
-  
-  const config = await getSiteConfig(slug);
+  const supabase = await createServerClient();
 
-  const supabase = await getSupabaseServerClient();
+  // Resolve clinic from authenticated user's profile (not from headers)
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) notFound();
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('clinic_id')
+    .eq('user_id', user.id)
+    .single();
+
+  if (!profile?.clinic_id) notFound();
+
+  const tenantId = profile.clinic_id;
+
   const { data: clinic } = await supabase
     .from('clinics')
-    .select('id')
-    .eq('slug', slug)
+    .select('slug, name')
+    .eq('id', tenantId)
     .single();
 
   if (!clinic) notFound();
 
-  const tenantId = clinic.id;
+  const config = await getSiteConfig(clinic.slug);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-6 md:p-12">

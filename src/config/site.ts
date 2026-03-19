@@ -1,9 +1,33 @@
+export interface ClinicService {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+}
+
+export interface ClinicDoctor {
+  id: string;
+  name: string;
+  specialty: string;
+  photo_url: string;
+}
+
+export interface ClinicReview {
+  id: string;
+  author: string;
+  rating: number;
+  comment: string;
+}
+
 export interface SiteConfig {
   clinicName: string;
   primaryColor: string;
   contactPhone: string;
   contactEmail: string;
   defaultServices: string[];
+  services: ClinicService[];
+  doctors: ClinicDoctor[];
+  reviews: ClinicReview[];
   siteUrl?: string;
   googleMapsUrl?: string;
   instagramUrl?: string;
@@ -21,6 +45,9 @@ export const siteConfig: SiteConfig = {
     "Orthodontics",
     "Dental Implants",
   ],
+  services: [],
+  doctors: [],
+  reviews: [],
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   googleMapsUrl: process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL,
   instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL,

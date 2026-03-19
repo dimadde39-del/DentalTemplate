@@ -25,11 +25,15 @@ export async function proxy(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.delete('x-tenant-slug');
   
+  // System paths that must never be treated as tenant routes
+  const systemPaths = ['/admin', '/login', '/404'];
+  const isSystemPath = systemPaths.some(p => url.pathname.startsWith(p));
+
   if (slug) {
     headers.set('x-tenant-slug', slug);
     supabaseResponse = NextResponse.next({ request: { headers } });
-  } else if (url.pathname.startsWith('/clinic/') || hostname.includes('.')) {
-    // 404 for unknown tenant
+  } else if (!isSystemPath && (url.pathname.startsWith('/clinic/') || hostname.includes('.'))) {
+    // 404 for unknown tenant (skip system paths)
     return NextResponse.redirect(new URL('/404', request.url));
   }
 

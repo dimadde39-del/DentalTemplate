@@ -1,16 +1,12 @@
 import { ServiceCard } from "./atoms/ServiceCard";
 import { Sparkles, Activity, ShieldCheck, Heart } from "lucide-react";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { getSiteConfig } from "@/lib/tenant";
+import { SiteConfig } from "@/config/site";
 
-export async function Services() {
-  const headersList = await headers();
-  const slug = headersList.get('x-tenant-slug') ?? 'default';
-  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
-  
-  const config = await getSiteConfig(slug);
+interface ServicesProps {
+  readonly config: SiteConfig;
+}
 
+export function Services({ config }: ServicesProps) {
   const icons = [
     <Sparkles key="1" className="w-8 h-8" />,
     <Activity key="2" className="w-8 h-8" />,

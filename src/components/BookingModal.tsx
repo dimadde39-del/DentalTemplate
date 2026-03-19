@@ -7,8 +7,8 @@ import { X, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useMemo } from "react";
+import { createBrowserClient } from "@/lib/supabase-browser";
 
 const OVERLAY_VARIANTS = {
   initial: { opacity: 0 },
@@ -39,6 +39,7 @@ export function BookingModal({ config, slug }: BookingModalProps) {
   const { isOpen, closeBooking } = useBooking();
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
+  const supabase = useMemo(() => createBrowserClient(), []);
   
   const {
     register,

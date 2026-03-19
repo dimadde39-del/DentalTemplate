@@ -23,8 +23,8 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen">
-      <Hero />
-      <Services />
+      <Hero config={config} />
+      <Services config={config} />
       <BeforeAfterSlider 
         beforeSrc="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=800"
         afterSrc="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=800"

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MoveRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { createBrowserClient } from "@supabase/ssr";
+import { createBrowserClient } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -13,11 +13,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // We construct the client directly to interact with Supabase Auth
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = useMemo(() => createBrowserClient(), []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,17 +1,13 @@
 import { CTAButton } from "./CTAButton";
 import Image from "next/image";
 import { FloatingBlobs } from "./FloatingBlobs";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { getSiteConfig } from "@/lib/tenant";
+import { SiteConfig } from "@/config/site";
 
-export async function Hero() {
-  const headersList = await headers();
-  const slug = headersList.get('x-tenant-slug') ?? 'default';
-  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
-  
-  const config = await getSiteConfig(slug);
+interface HeroProps {
+  readonly config: SiteConfig;
+}
 
+export function Hero({ config }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
       <FloatingBlobs />

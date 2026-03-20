@@ -1,19 +1,12 @@
-import { Hero } from "@/components/Hero";
-import { Doctors } from "@/components/Doctors";
-import { Services } from "@/components/Services";
-import dynamic from "next/dynamic";
+import { HeroSection } from "@/components/clinic/HeroSection";
+import { StickyWhatsAppButton } from "@/components/clinic/StickyWhatsAppButton";
+import { ServicesGrid } from "@/components/clinic/ServicesGrid";
+import { DoctorsRail } from "@/components/clinic/DoctorsRail";
+import { ReviewsSection } from "@/components/clinic/ReviewsSection";
+import { FinalContactCTA } from "@/components/clinic/FinalContactCTA";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
-
-const BeforeAfterSlider = dynamic(
-  () => import("@/components/BeforeAfterSlider").then(mod => mod.BeforeAfterSlider),
-  { loading: () => <div className="w-full max-w-4xl mx-auto my-12 aspect-[4/3] bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-2xl" /> }
-);
-const Testimonials = dynamic(
-  () => import("@/components/Testimonials").then(mod => mod.Testimonials),
-  { loading: () => <div className="w-full h-96 bg-zinc-50 dark:bg-zinc-950 animate-pulse" /> }
-);
 
 export default async function Home() {
   const headersList = await headers();
@@ -24,15 +17,13 @@ export default async function Home() {
   if (!config) notFound();
 
   return (
-    <main className="min-h-screen">
-      <Hero config={config} />
-      <Services config={config} />
-      <Doctors config={config} />
-      <BeforeAfterSlider 
-        beforeSrc="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=800"
-        afterSrc="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=800"
-      />
-      <Testimonials config={config} />
+    <main className="min-h-screen bg-background">
+      <HeroSection config={config} />
+      <ServicesGrid config={config} />
+      <DoctorsRail config={config} />
+      <ReviewsSection config={config} />
+      <FinalContactCTA config={config} />
+      <StickyWhatsAppButton phone={config.contactPhone} />
     </main>
   );
 }

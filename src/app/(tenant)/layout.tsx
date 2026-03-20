@@ -1,6 +1,3 @@
-import { BookingProvider } from "@/context/BookingContext";
-import { BookingModal } from "@/components/BookingModal";
-import { Header } from "@/components/Header";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
@@ -67,7 +64,7 @@ export default async function TenantLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { slug, config, siteUrl } = await getTenantRequestContext();
+  const { config, siteUrl } = await getTenantRequestContext();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -83,11 +80,7 @@ export default async function TenantLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BookingProvider>
-        <Header config={config} />
-        {children}
-        <BookingModal config={config} slug={slug} />
-      </BookingProvider>
+      {children}
     </div>
   );
 }

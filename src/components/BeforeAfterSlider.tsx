@@ -1,29 +1,23 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { MoveHorizontal } from "lucide-react";
-
-import { SiteConfig } from "@/config/site";
 
 interface SliderProps {
   readonly beforeSrc: string;
   readonly afterSrc: string;
-  readonly config: SiteConfig;
 }
 
-export function BeforeAfterSlider({ beforeSrc, afterSrc, config }: SliderProps) {
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+export function BeforeAfterSlider({ beforeSrc, afterSrc }: SliderProps) {
+  const [hasInteracted, setHasInteracted] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("slider-hint") === "seen";
+  });
   const afterImageRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("slider-hint") === "seen") {
-      setHasInteracted(true);
-    }
-  }, []);
 
   const updateDOM = (value: string | number) => {
     if (afterImageRef.current) {

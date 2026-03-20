@@ -1,83 +1,171 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
+import { getClinicSiteUrl, normalizeHost } from '@/lib/site-url';
+
+const RESERVED_SUBDOMAINS = new Set(['www', 'app', 'admin', 'api', 'login']);
+const SYSTEM_PATHS = ['/admin', '/login', '/404'];
+const PLATFORM_DOMAIN = normalizeHost(process.env.NEXT_PUBLIC_PLATFORM_DOMAIN);
+
+const proxySupabase =
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      })
+    : null;
+
+function isSystemPath(pathname: string): boolean {
+  return SYSTEM_PATHS.some((path) => pathname.startsWith(path));
+}
+
+function isLocalHost(hostname: string): boolean {
+  return (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname.endsWith('.localhost')
+  );
+}
+
+function isPlatformHost(hostname: string): boolean {
+  if (!hostname) return true;
+  if (isLocalHost(hostname)) return true;
+  if (!PLATFORM_DOMAIN) return false;
+
+  return hostname === PLATFORM_DOMAIN || hostname.endsWith(`.${PLATFORM_DOMAIN}`);
+}
+
+function getPlatformSubdomain(hostname: string): string | null {
+  if (!PLATFORM_DOMAIN || !hostname.endsWith(`.${PLATFORM_DOMAIN}`) || hostname === PLATFORM_DOMAIN) {
+    return null;
+  }
+
+  const candidate = hostname.slice(0, -(PLATFORM_DOMAIN.length + 1));
+  if (!candidate || candidate.includes('.') || RESERVED_SUBDOMAINS.has(candidate)) {
+    return null;
+  }
+
+  return candidate;
+}
+
+function getPathTenantSlug(pathname: string): string | null {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments[0] !== 'clinic' || !segments[1]) return null;
+
+  return segments[1].toLowerCase();
+}
+
+function buildTenantRewriteUrl(request: NextRequest): URL {
+  const rewrittenUrl = request.nextUrl.clone();
+  const segments = rewrittenUrl.pathname.split('/').filter(Boolean);
+  const remainder = segments.slice(2);
+
+  rewrittenUrl.pathname = remainder.length > 0 ? `/${remainder.join('/')}` : '/';
+
+  return rewrittenUrl;
+}
+
+async function resolveCustomDomainSlug(hostname: string): Promise<string | null> {
+  if (!proxySupabase || !hostname || isPlatformHost(hostname)) return null;
+
+  const { data, error } = await proxySupabase.rpc('resolve_clinic_host', { p_host: hostname });
+  if (error) {
+    console.error('Failed to resolve clinic host:', error.message);
+    return null;
+  }
+
+  return typeof data === 'string' && data.trim() ? data.trim().toLowerCase() : null;
+}
 
 export async function proxy(request: NextRequest) {
-  const hostname = request.headers.get('host') || '';
-  const url = new URL(request.url);
-  const systemSubdomains = ['www', 'app', 'admin', 'api', 'login', 'localhost'];
+  const hostname = normalizeHost(request.headers.get('x-forwarded-host') ?? request.headers.get('host'));
+  const protocol =
+    request.headers.get('x-forwarded-proto') ??
+    (isLocalHost(hostname) ? 'http' : 'https');
+  const pathname = request.nextUrl.pathname;
+  const isSystemRoute = isSystemPath(pathname);
+  const pathSlug = getPathTenantSlug(pathname);
+  const subdomainSlug = getPlatformSubdomain(hostname);
+  const customDomainSlug = await resolveCustomDomainSlug(hostname);
 
-  let slug = null;
+  const slug = customDomainSlug ?? subdomainSlug ?? pathSlug;
+  const resolvedViaPath = !customDomainSlug && !subdomainSlug && Boolean(pathSlug);
 
-  // subdomain routing
-  const domainParts = hostname.split('.');
-  if (domainParts.length > 2 && !systemSubdomains.includes(domainParts[0])) {
-    slug = domainParts[0];
-  }
-  // path routing
-  else if (url.pathname.startsWith('/clinic/')) {
-    slug = url.pathname.split('/')[2];
-  }
-
-  // Protect /admin routes using @supabase/ssr
-  let supabaseResponse = NextResponse.next();
-  // Strip incoming tenant spoofing headers before setting our own
   const headers = new Headers(request.headers);
   headers.delete('x-tenant-slug');
-  
-  // System paths that must never be treated as tenant routes
-  const systemPaths = ['/admin', '/login', '/404'];
-  const isSystemPath = systemPaths.some(p => url.pathname.startsWith(p));
+  headers.delete('x-tenant-path-prefix');
+  headers.delete('x-tenant-site-url');
+
+  let response =
+    slug && resolvedViaPath
+      ? NextResponse.rewrite(buildTenantRewriteUrl(request), { request: { headers } })
+      : NextResponse.next({ request: { headers } });
 
   if (slug) {
     headers.set('x-tenant-slug', slug);
-    supabaseResponse = NextResponse.next({ request: { headers } });
-  } else if (!isSystemPath && (url.pathname.startsWith('/clinic/') || hostname.includes('.'))) {
-    // 404 for unknown tenant (skip system paths)
-    return NextResponse.redirect(new URL('/404', request.url));
+
+    if (resolvedViaPath) {
+      headers.set('x-tenant-path-prefix', `/clinic/${slug}`);
+    }
+
+    headers.set(
+      'x-tenant-site-url',
+      getClinicSiteUrl({
+        slug,
+        requestHost: hostname,
+        protocol,
+        pathPrefix: resolvedViaPath ? `/clinic/${slug}` : undefined,
+      })
+    );
+
+    response =
+      slug && resolvedViaPath
+        ? NextResponse.rewrite(buildTenantRewriteUrl(request), { request: { headers } })
+        : NextResponse.next({ request: { headers } });
+  } else {
+    const invalidClinicPath = pathname === '/clinic' || pathname.startsWith('/clinic/');
+
+    if (!isSystemRoute && (invalidClinicPath || (!isPlatformHost(hostname) && Boolean(hostname)))) {
+      return NextResponse.redirect(new URL('/404', request.url));
+    }
   }
 
-  if (url.pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/admin')) {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           getAll() {
-            return request.cookies.getAll()
+            return request.cookies.getAll();
           },
-          setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
-            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-            // To set cookies on the response, we must have a response object
-            if (!slug) {
-              supabaseResponse = NextResponse.next({ request: { headers } })
-            }
+          setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
             cookiesToSet.forEach(({ name, value, options }) =>
-              supabaseResponse.cookies.set(name, value, options)
-            )
+              response.cookies.set(name, value, options)
+            );
           },
         },
       }
-    )
+    );
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
     '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 };

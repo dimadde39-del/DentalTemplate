@@ -1,4 +1,5 @@
 import { Hero } from "@/components/Hero";
+import { Doctors } from "@/components/Doctors";
 import { Services } from "@/components/Services";
 import dynamic from "next/dynamic";
 import { headers } from "next/headers";
@@ -20,17 +21,18 @@ export default async function Home() {
   if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
   
   const config = await getSiteConfig(slug);
+  if (!config) notFound();
 
   return (
     <main className="min-h-screen">
       <Hero config={config} />
       <Services config={config} />
+      <Doctors config={config} />
       <BeforeAfterSlider 
         beforeSrc="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=800"
         afterSrc="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=800"
-        config={config}
       />
-      <Testimonials />
+      <Testimonials config={config} />
     </main>
   );
 }

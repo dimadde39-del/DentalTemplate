@@ -4,35 +4,61 @@ import { Header } from "@/components/Header";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
+import { getClinicSiteUrl, normalizeHost } from "@/lib/site-url";
 import type { Metadata } from "next";
 
-export async function generateMetadata(): Promise<Metadata> {
+async function getTenantRequestContext() {
   const headersList = await headers();
-  const slug = headersList.get('x-tenant-slug') ?? 'default';
-  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
-  
+  const slug = headersList.get("x-tenant-slug") ?? "default";
+  const pathPrefix = headersList.get("x-tenant-path-prefix");
+  const requestHost = normalizeHost(headersList.get("x-forwarded-host") ?? headersList.get("host"));
+  const protocol = headersList.get("x-forwarded-proto") ?? undefined;
+
+  if (!slug || (slug === "default" && process.env.NODE_ENV === "production")) notFound();
+
   const config = await getSiteConfig(slug);
+  if (!config) notFound();
+
+  const siteUrl =
+    headersList.get("x-tenant-site-url") ??
+    getClinicSiteUrl({
+      slug,
+      requestHost,
+      protocol,
+      domain: config.siteUrl,
+      pathPrefix,
+    });
+
+  return { slug, config, siteUrl };
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { config, siteUrl } = await getTenantRequestContext();
+  const description = config.heroSubtitle;
 
   return {
     title: {
       default: `${config.clinicName} | Premium Dental Care`,
-      template: `%s | ${config.clinicName}`
+      template: `%s | ${config.clinicName}`,
     },
-    description: `Experience modern dentistry at ${config.clinicName}. State-of-the-art technology and compassionate care for your beautiful smile.`,
+    description,
+    alternates: {
+      canonical: siteUrl,
+    },
     openGraph: {
       title: `${config.clinicName} | Premium Dental Care`,
-      description: `Experience modern dentistry at ${config.clinicName}. State-of-the-art technology and compassionate care for your beautiful smile.`,
-      url: config.siteUrl || 'http://localhost:3000',
+      description,
+      url: siteUrl,
       siteName: config.clinicName,
-      locale: 'en_US',
-      type: 'website',
+      locale: "en_US",
+      type: "website",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: `${config.clinicName} | Premium Dental Care`,
-      description: `Experience modern dentistry at ${config.clinicName}. State-of-the-art technology and compassionate care for your beautiful smile.`,
+      description,
     },
-    metadataBase: new URL(config.siteUrl || 'http://localhost:3000'),
+    metadataBase: new URL(siteUrl),
   };
 }
 
@@ -41,22 +67,14 @@ export default async function TenantLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersList = await headers();
-  const slug = headersList.get('x-tenant-slug') ?? 'default';
-  if (!slug || (slug === 'default' && process.env.NODE_ENV === 'production')) notFound();
-  
-  const config = await getSiteConfig(slug);
+  const { slug, config, siteUrl } = await getTenantRequestContext();
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "Dentist"],
-    "name": config.clinicName,
-    "url": config.siteUrl || 'http://localhost:3000',
-    "sameAs": [
-      config.googleMapsUrl, 
-      config.instagramUrl, 
-      config.facebookUrl
-    ].filter(Boolean)
+    name: config.clinicName,
+    url: siteUrl,
+    sameAs: [config.googleMapsUrl, config.instagramUrl, config.facebookUrl].filter(Boolean),
   };
 
   return (

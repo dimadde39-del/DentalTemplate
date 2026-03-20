@@ -5,14 +5,16 @@ import { ChevronRight } from "lucide-react";
 
 interface ServiceCardProps {
   title: string;
-  description?: string;
+  description?: string | null;
+  price?: string | null;
   icon?: React.ReactNode;
   delay?: number;
 }
 
 export function ServiceCard({
   title,
-  description = "Comprehensive standard care for a healthy, beautiful smile using state-of-the-art techniques.",
+  description,
+  price,
   icon,
   delay = 0,
 }: ServiceCardProps) {
@@ -36,9 +38,16 @@ export function ServiceCard({
         <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">
           {title}
         </h3>
-        <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
-          {description}
-        </p>
+        {description && (
+          <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+            {description}
+          </p>
+        )}
+        {price && (
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-primary)] mb-6">
+            {price}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center text-[var(--color-primary)] font-semibold text-sm group-hover:translate-x-2 transition-transform duration-300">

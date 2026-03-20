@@ -7,7 +7,7 @@ import { X, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createBrowserClient } from "@/lib/supabase-browser";
 
 const OVERLAY_VARIANTS = {
@@ -40,32 +40,36 @@ export function BookingModal({ config, slug }: BookingModalProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
   const supabase = useMemo(() => createBrowserClient(), []);
-  
+  const serviceOptions = config.services
+    .map((service) => service.name.trim())
+    .filter(Boolean);
+  const hasStructuredServices = serviceOptions.length > 0;
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset
+    reset,
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
   });
 
   const onSubmit = async (data: BookingFormData) => {
-    const { error } = await supabase.rpc('insert_public_lead', { 
+    const { error } = await supabase.rpc("insert_public_lead", {
       p_slug: slug,
-      p_name: data.name, 
-      p_phone: data.phone, 
-      p_service: data.service 
+      p_name: data.name,
+      p_phone: data.phone,
+      p_service: data.service,
     });
 
     if (error) {
       console.error("Error inserting lead:", error);
       return;
     }
-    
+
     setSubmittedName(data.name);
     setIsSuccess(true);
-    
+
     setTimeout(() => {
       closeBooking();
       setTimeout(() => {
@@ -84,7 +88,7 @@ export function BookingModal({ config, slug }: BookingModalProps) {
           animate="animate"
           exit="exit"
           onClick={closeBooking}
-          className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm md:items-center"
         >
           <motion.div
             variants={PANEL_VARIANTS}
@@ -92,35 +96,36 @@ export function BookingModal({ config, slug }: BookingModalProps) {
             animate="animate"
             exit="exit"
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            onClick={(e) => e.stopPropagation()}
-            className="h-[90vh] md:h-auto w-full md:max-w-lg bg-white dark:bg-zinc-900 rounded-t-3xl md:rounded-2xl shadow-2xl overflow-y-auto flex flex-col"
+            onClick={(event) => event.stopPropagation()}
+            className="flex h-[90vh] w-full flex-col overflow-y-auto rounded-t-3xl bg-white shadow-2xl md:h-auto md:max-w-lg md:rounded-2xl dark:bg-zinc-900"
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
-              <h2 className="text-xl font-bold font-sans">Book Appointment</h2>
+            <div className="flex items-center justify-between border-b border-zinc-100 px-6 py-4 shrink-0 dark:border-zinc-800">
+              <h2 className="font-sans text-xl font-bold">Book Appointment</h2>
               <button
                 onClick={closeBooking}
-                className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 aria-label="Close"
               >
-                <X className="w-5 h-5 text-zinc-500" />
+                <X className="h-5 w-5 text-zinc-500" />
               </button>
             </div>
 
-            <div className="p-6 flex-1 flex flex-col">
+            <div className="flex flex-1 flex-col p-6">
               {isSuccess ? (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center text-center py-12 h-full"
+                  className="flex h-full flex-col items-center justify-center py-12 text-center"
                 >
-                  <CheckCircle2 className="w-16 h-16 text-green-500 mb-4" />
-                  <h3 className="text-2xl font-bold mb-2">Спасибо, {submittedName}!</h3>
+                  <CheckCircle2 className="mb-4 h-16 w-16 text-green-500" />
+                  <h3 className="mb-2 text-2xl font-bold">Thank you, {submittedName}!</h3>
                   <p className="text-zinc-600 dark:text-zinc-400">
-                    We've received your request and will contact you shortly to confirm your appointment.
+                    We have received your request and will contact you shortly to confirm your
+                    appointment.
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 flex flex-col h-full">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col space-y-5">
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                       Full Name
@@ -128,11 +133,11 @@ export function BookingModal({ config, slug }: BookingModalProps) {
                     <input
                       {...register("name")}
                       type="text"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
+                      className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-base outline-none transition-all focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 dark:border-zinc-700 dark:bg-zinc-800"
                       placeholder="John Doe"
                     />
                     {errors.name && (
-                      <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
                     )}
                   </div>
 
@@ -143,11 +148,11 @@ export function BookingModal({ config, slug }: BookingModalProps) {
                     <input
                       {...register("phone")}
                       type="tel"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
+                      className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-base outline-none transition-all focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 dark:border-zinc-700 dark:bg-zinc-800"
                       placeholder="+1 (555) 000-0000"
                     />
                     {errors.phone && (
-                      <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
                     )}
                   </div>
 
@@ -155,33 +160,42 @@ export function BookingModal({ config, slug }: BookingModalProps) {
                     <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                       Service Interested In
                     </label>
-                    <select
-                      {...register("service")}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all appearance-none"
-                    >
-                      <option value="">Select a service...</option>
-                      {config.defaultServices.map((service) => (
-                        <option key={service} value={service}>
-                          {service}
-                        </option>
-                      ))}
-                    </select>
+                    {hasStructuredServices ? (
+                      <select
+                        {...register("service")}
+                        className="w-full appearance-none rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-base outline-none transition-all focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 dark:border-zinc-700 dark:bg-zinc-800"
+                      >
+                        <option value="">Select a service...</option>
+                        {serviceOptions.map((service) => (
+                          <option key={service} value={service}>
+                            {service}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        {...register("service")}
+                        type="text"
+                        className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-base outline-none transition-all focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 dark:border-zinc-700 dark:bg-zinc-800"
+                        placeholder="Describe the treatment you are interested in"
+                      />
+                    )}
                     {errors.service && (
-                      <p className="text-red-500 text-sm mt-1">{errors.service.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.service.message}</p>
                     )}
                   </div>
 
-                  <div className="mt-auto pt-4 shrink-0">
+                  <div className="mt-auto shrink-0 pt-4">
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full min-h-[48px] bg-[var(--color-primary)] text-white rounded-xl font-bold text-base hover:opacity-90 active:scale-[0.98] disabled:opacity-70 transition-all flex items-center justify-center"
+                      className="flex min-h-[48px] w-full items-center justify-center rounded-xl bg-[var(--color-primary)] text-base font-bold text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-70"
                     >
                       {isSubmitting ? (
                         <motion.div
                           animate={{ rotate: 360 }}
                           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                          className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white"
                         />
                       ) : (
                         "Confirm Request"

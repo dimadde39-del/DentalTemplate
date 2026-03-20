@@ -4,10 +4,9 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
 interface Review {
-  id: number;
-  name: string;
-  role: string;
-  content: string;
+  id: string;
+  author: string;
+  comment: string;
   rating: number;
 }
 
@@ -45,13 +44,12 @@ export function ReviewMarquee({ reviews }: { reviews: Review[] }) {
               ))}
             </div>
             <p className="text-zinc-700 dark:text-zinc-300 mb-6 italic">
-              "{review.content}"
+              &ldquo;{review.comment}&rdquo;
             </p>
             <div>
               <p className="font-bold text-zinc-900 dark:text-white">
-                {review.name}
+                {review.author}
               </p>
-              <p className="text-sm text-zinc-500">{review.role}</p>
             </div>
           </div>
         ))}

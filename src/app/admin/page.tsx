@@ -82,6 +82,7 @@ export default async function AdminPage() {
   if (!clinic) notFound();
 
   const config = await getSiteConfig(clinic.slug);
+  if (!config) notFound();
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-6 md:p-12">

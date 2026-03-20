@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getPlatformOrigin } from '@/lib/site-url';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/sitemap.xml`,
+    sitemap: `${getPlatformOrigin()}/sitemap.xml`,
   }
 }

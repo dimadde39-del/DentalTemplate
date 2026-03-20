@@ -2,7 +2,6 @@ DO $$
 DECLARE
   v_clinic_id uuid;
 BEGIN
-  -- Clinic
   INSERT INTO clinics (slug, name, primary_color, contact_phone, contact_email)
   VALUES (
     'global-dent',
@@ -18,31 +17,41 @@ BEGIN
     contact_email = EXCLUDED.contact_email
   RETURNING id INTO v_clinic_id;
 
-  -- Doctors
   INSERT INTO doctors (id, clinic_id, name, specialty, photo_url) VALUES
-    (gen_random_uuid(), v_clinic_id, 'Абилов Тофик Исламович', 'Главный врач, хирург-имплантолог (26 лет стажа)', '/doctors/abilov.jpg'),
-    (gen_random_uuid(), v_clinic_id, 'Алимжан Жомартович', 'Хирург-имплантолог (All-on-4, синус-лифтинг)', '/doctors/alimzhan.jpg'),
-    (gen_random_uuid(), v_clinic_id, 'Юсупбеков Эрик Рустамович', 'Хирург-имплантолог, ортопед', '/doctors/erik.jpg'),
-    (gen_random_uuid(), v_clinic_id, 'Камалидин Абидинович', 'Стоматолог-терапевт', '/doctors/kamalidin.jpg'),
-    (gen_random_uuid(), v_clinic_id, 'Кужербаева Данара Жанибековна', 'Стоматолог-терапевт, детский врач', '/doctors/danara.jpg')
+    (gen_random_uuid(), v_clinic_id, 'Tofik Abilov', 'Chief physician and implant surgeon with 26 years of experience', '/doctors/abilov.png'),
+    (gen_random_uuid(), v_clinic_id, 'Alimzhan Zhomartovich', 'Implant surgeon focused on All-on-4 and sinus lift cases', '/doctors/alimzhan.png'),
+    (gen_random_uuid(), v_clinic_id, 'Erik Yusupbekov', 'Implant surgeon and prosthodontist', '/doctors/erik.png'),
+    (gen_random_uuid(), v_clinic_id, 'Kamalidin Abidinov', 'General dentist and restorative care specialist', '/doctors/kamalidin.png'),
+    (gen_random_uuid(), v_clinic_id, 'Danara Kuzherbayeva', 'General and pediatric dentist', '/doctors/danara.png')
   ON CONFLICT DO NOTHING;
 
-  -- Services
   INSERT INTO services (id, clinic_id, name, description, price) VALUES
-    (gen_random_uuid(), v_clinic_id, 'Имплантат Straumann', 'Премиальная имплантация с пожизненной гарантией', '450000'),
-    (gen_random_uuid(), v_clinic_id, 'Имплантат MIS / AlphaBio', 'Надежная имплантация по доступной цене', '160000'),
-    (gen_random_uuid(), v_clinic_id, 'Профессиональная чистка зубов', 'Удаление камня и налета (Акция)', '13500'),
-    (gen_random_uuid(), v_clinic_id, 'Лечение кариеса', 'Премиальные световые пломбы', '7000')
+    (gen_random_uuid(), v_clinic_id, 'Straumann Implant', 'Premium implant treatment with long-term restorative planning.', '450000'),
+    (gen_random_uuid(), v_clinic_id, 'MIS / AlphaBio Implant', 'Reliable implant placement with a more accessible treatment budget.', '160000'),
+    (gen_random_uuid(), v_clinic_id, 'Professional Dental Cleaning', 'Plaque and tartar removal with a preventive care consultation.', '13500'),
+    (gen_random_uuid(), v_clinic_id, 'Caries Treatment', 'Modern restorative treatment with aesthetic light-cured fillings.', '7000')
   ON CONFLICT DO NOTHING;
 
-  -- Reviews
   INSERT INTO reviews (id, clinic_id, author, rating, comment) VALUES
-    (gen_random_uuid(), v_clinic_id, 'Руслан М.', 5, 'Тофик Исламович — врач от бога! Ставил импланты Straumann, всё прошло идеально, золотые руки. Рекомендую всем!'),
-    (gen_random_uuid(), v_clinic_id, 'Асель К.', 5, 'Вожу ребенка только к Данаре Жанибековне. Настоящая зубная фея — ребенок перестал бояться стоматолога!'),
-    (gen_random_uuid(), v_clinic_id, 'Марат Т.', 5, 'Делал All-on-4 у Алимжана Жомартовича. Операция прошла на высшем уровне, через 3 месяца уже полноценно жую. Спасибо огромное!'),
-    (gen_random_uuid(), v_clinic_id, 'Айгерим Н.', 5, 'Лечила кариес у Камалидина Абидиновича — никакой боли, пломба как родная. Клиника чистая, современная, персонал вежливый.'),
-    (gen_random_uuid(), v_clinic_id, 'Дмитрий С.', 5, 'Эрик Рустамович поставил коронки — идеально подобрал цвет, сидят как влитые. Профессионал высокого класса, буду обращаться снова.')
+    (gen_random_uuid(), v_clinic_id, 'Ruslan M.', 5, 'Straumann implant treatment was smooth from consultation to recovery. The care felt premium and precise.'),
+    (gen_random_uuid(), v_clinic_id, 'Asel K.', 5, 'Our family trusts the team completely. My child now comes to appointments calmly and confidently.'),
+    (gen_random_uuid(), v_clinic_id, 'Marat T.', 5, 'The All-on-4 surgery was handled at a very high level and the recovery guidance was excellent.'),
+    (gen_random_uuid(), v_clinic_id, 'Aigerim N.', 5, 'Caries treatment was painless, efficient, and the clinic experience felt clean and modern.'),
+    (gen_random_uuid(), v_clinic_id, 'Dmitriy S.', 5, 'The crowns were color-matched perfectly and the final result felt natural from day one.')
   ON CONFLICT DO NOTHING;
+
+  INSERT INTO settings (clinic_id, key, value)
+  VALUES
+    (v_clinic_id, 'hero_title', 'Global Dent Premium Implant Center'),
+    (v_clinic_id, 'hero_subtitle', 'Implantology, restorative dentistry, and specialist-led treatment plans for demanding patients.'),
+    (v_clinic_id, 'services_title', 'Popular Treatments'),
+    (v_clinic_id, 'services_subtitle', 'From premium implants to daily restorative care, every service is tailored to long-term oral health.'),
+    (v_clinic_id, 'doctors_title', 'Meet Our Doctors'),
+    (v_clinic_id, 'doctors_subtitle', 'A multidisciplinary team focused on surgical precision, comfort, and durable outcomes.'),
+    (v_clinic_id, 'testimonials_title', 'Patient Feedback'),
+    (v_clinic_id, 'testimonials_subtitle', 'Reviews from patients who trusted Global Dent with complex and routine dental care.')
+  ON CONFLICT (clinic_id, key) DO UPDATE SET
+    value = EXCLUDED.value;
 
   RAISE NOTICE 'Demo clinic created with ID: %', v_clinic_id;
 END $$;

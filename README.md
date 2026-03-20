@@ -8,6 +8,7 @@ cp .env.example .env.local
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_PLATFORM_DOMAIN=yourplatform.com
 ```
 
@@ -30,9 +31,9 @@ Custom domains → point to Vercel + add row to clinics table.
 
 ## Onboarding New Clinic
 ```bash
-npm run onboard -- --slug=new-dental --name="Elite Dental"
+npm run onboard -- --slug=new-dental --name="Elite Dental" --admin-email=owner@elite-dental.com
 ```
-Everything is atomic (transaction + rollback on error).
+The CLI validates slug/domain uniqueness, clones template content, invites the clinic admin, binds the profile to `clinic_id`, and rolls back the clinic if the admin step fails.
 
 ## Logging & Observability
 All public lead inserts go through RPC and are logged in Supabase.

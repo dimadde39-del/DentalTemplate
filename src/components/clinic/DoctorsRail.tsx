@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ClinicDoctor, SiteConfig } from "@/config/site";
 
 interface DoctorsRailProps {
@@ -87,12 +86,12 @@ export function DoctorsRail({ config }: DoctorsRailProps) {
                 >
                   <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-primary)]/10">
                     {photoSrc ? (
-                      <Image
+                      <img
                         src={photoSrc}
                         alt={doctor.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 264px, 20vw"
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center bg-gradient-to-br from-[var(--color-primary)]/16 to-transparent text-5xl font-black tracking-[-0.04em] text-[var(--color-primary)]">

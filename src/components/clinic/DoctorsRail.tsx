@@ -11,6 +11,23 @@ type RailDoctor = ClinicDoctor & {
   readonly experience_label?: string | null;
 };
 
+function normalizeDoctorPhotoSrc(photoUrl: string | null | undefined): string | null {
+  const trimmed = photoUrl?.trim();
+  if (!trimmed) return null;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  const normalized = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+
+  if (normalized.startsWith("/doctors/") && normalized.endsWith(".jpg")) {
+    return normalized.replace(/\.jpg$/i, ".png");
+  }
+
+  return normalized;
+}
+
 function getDoctorInitials(name: string): string {
   return name
     .split(" ")
@@ -61,6 +78,7 @@ export function DoctorsRail({ config }: DoctorsRailProps) {
           <div className="flex snap-x snap-mandatory gap-4 pb-2 lg:grid lg:grid-cols-5 lg:gap-5 lg:pb-0">
             {doctors.map((doctor) => {
               const experienceLabel = getDoctorExperienceLabel(doctor);
+              const photoSrc = normalizeDoctorPhotoSrc(doctor.photo_url);
 
               return (
                 <article
@@ -68,9 +86,9 @@ export function DoctorsRail({ config }: DoctorsRailProps) {
                   className="group w-[16.5rem] shrink-0 snap-start overflow-hidden rounded-[28px] border border-foreground/8 bg-foreground/[0.03] ring-1 ring-white/5 transition-[transform,box-shadow,border-color] duration-200 lg:w-auto lg:shrink lg:hover:scale-[1.02] lg:hover:border-[var(--color-primary)] lg:hover:shadow-[0_18px_50px_color-mix(in_oklab,var(--color-primary)_14%,transparent)]"
                 >
                   <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-primary)]/10">
-                    {doctor.photo_url ? (
+                    {photoSrc ? (
                       <Image
-                        src={doctor.photo_url}
+                        src={photoSrc}
                         alt={doctor.name}
                         fill
                         className="object-cover"

@@ -1,60 +1,57 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
-import { getClinicSiteUrl, normalizeHost } from "@/lib/site-url";
+import { normalizeHost } from "@/lib/site-url";
 import type { Metadata } from "next";
 import { BookingProvider } from "@/context/BookingContext";
 import { BookingModal } from "@/components/BookingModal";
 
+function getCanonicalClinicUrl(slug: string, domain?: string | null): string {
+  const normalizedDomain = normalizeHost(domain);
+  if (normalizedDomain) {
+    return `https://${normalizedDomain}`;
+  }
+
+  return `https://${slug}.dental-saas-platform.vercel.app`;
+}
+
 async function getTenantRequestContext() {
   const headersList = await headers();
   const slug = headersList.get("x-tenant-slug") ?? "default";
-  const pathPrefix = headersList.get("x-tenant-path-prefix");
-  const requestHost = normalizeHost(headersList.get("x-forwarded-host") ?? headersList.get("host"));
-  const protocol = headersList.get("x-forwarded-proto") ?? undefined;
 
   if (!slug || (slug === "default" && process.env.NODE_ENV === "production")) notFound();
 
   const config = await getSiteConfig(slug);
   if (!config) notFound();
 
-  const siteUrl =
-    headersList.get("x-tenant-site-url") ??
-    getClinicSiteUrl({
-      slug,
-      requestHost,
-      protocol,
-      domain: config.siteUrl,
-      pathPrefix,
-    });
+  const siteUrl = getCanonicalClinicUrl(slug, config.domain);
 
   return { slug, config, siteUrl };
 }
 
 export async function generateMetadata(): Promise<Metadata> {
   const { config, siteUrl } = await getTenantRequestContext();
-  const description = config.heroSubtitle;
+  const description =
+    config.heroSubtitle?.trim() ||
+    "Современная стоматология в Алматы с консультацией, имплантацией и комплексным лечением.";
+  const title = `${config.clinicName} | Стоматология в Алматы`;
 
   return {
-    title: {
-      default: `${config.clinicName} | Premium Dental Care`,
-      template: `%s | ${config.clinicName}`,
-    },
+    title,
     description,
     alternates: {
       canonical: siteUrl,
     },
     openGraph: {
-      title: `${config.clinicName} | Premium Dental Care`,
+      title,
       description,
       url: siteUrl,
       siteName: config.clinicName,
-      locale: "en_US",
       type: "website",
     },
     twitter: {
-      card: "summary_large_image",
-      title: `${config.clinicName} | Premium Dental Care`,
+      card: "summary",
+      title,
       description,
     },
     metadataBase: new URL(siteUrl),
@@ -66,22 +63,10 @@ export default async function TenantLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { slug, config, siteUrl } = await getTenantRequestContext();
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "Dentist"],
-    name: config.clinicName,
-    url: siteUrl,
-    sameAs: [config.googleMapsUrl, config.instagramUrl, config.facebookUrl].filter(Boolean),
-  };
+  const { slug, config } = await getTenantRequestContext();
 
   return (
     <div style={{ "--primary": config.primaryColor } as React.CSSProperties} className="min-h-screen">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       <BookingProvider>
         {children}
         <BookingModal config={config} slug={slug} />

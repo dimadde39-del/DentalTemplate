@@ -24,6 +24,7 @@ export interface SiteConfig {
   primaryColor: string;
   contactPhone: string;
   contactEmail: string;
+  domain?: string | null;
   heroTitle: string;
   heroSubtitle: string;
   servicesTitle: string;
@@ -46,6 +47,7 @@ export const siteConfig: SiteConfig = {
   primaryColor: process.env.NEXT_PUBLIC_PRIMARY_COLOR || "#0ea5e9",
   contactPhone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "+1 234 567 8900",
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "hello@dental.com",
+  domain: null,
   heroTitle: "Premium Care for Confident Smiles",
   heroSubtitle:
     "Experience modern dentistry with a specialist team, thoughtful service, and treatment plans tailored to your goals.",

@@ -34,6 +34,7 @@ export async function getSiteConfig(slug: string): Promise<SiteConfig | null> {
         primaryColor: clinic.primary_color || fallbackConfig.primaryColor,
         contactPhone: clinic.contact_phone || fallbackConfig.contactPhone,
         contactEmail: clinic.contact_email || fallbackConfig.contactEmail,
+        domain: clinic.domain || null,
         heroTitle: content.hero_title || `Premium Care at ${clinicName}`,
         heroSubtitle: content.hero_subtitle || fallbackConfig.heroSubtitle,
         servicesTitle: content.services_title || fallbackConfig.servicesTitle,

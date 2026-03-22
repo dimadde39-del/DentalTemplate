@@ -1,5 +1,8 @@
+"use client";
+
 import { Clock3, Mail, MapPin, MessageCircle, PhoneCall } from "lucide-react";
 import { SiteConfig } from "@/config/site";
+import { useBooking } from "@/context/BookingContext";
 
 interface FinalContactCTAProps {
   readonly config: SiteConfig;
@@ -20,13 +23,9 @@ function toTelHref(phone: string): string {
   return `tel:${normalized}`;
 }
 
-function toWhatsAppHref(phone: string): string {
-  const digits = phone.replace(/\D/g, "");
-  return `https://wa.me/${digits}`;
-}
-
 export function FinalContactCTA({ config }: FinalContactCTAProps) {
   const extendedConfig = config as ExtendedContactConfig;
+  const { openBooking } = useBooking();
   const phone = getTrimmedValue(config.contactPhone);
   const email = getTrimmedValue(config.contactEmail);
   const address = getTrimmedValue(extendedConfig.address);
@@ -67,15 +66,14 @@ export function FinalContactCTA({ config }: FinalContactCTAProps) {
               </div>
 
               <div className="relative rounded-[28px] border border-foreground/8 bg-black/[0.12] p-5 ring-1 ring-white/5 sm:p-6">
-                <a
-                  href={toWhatsAppHref(phone)}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={openBooking}
                   className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[var(--color-primary)] px-5 py-3 text-base font-semibold text-white shadow-[0_14px_36px_color-mix(in_oklab,var(--color-primary)_28%,transparent)] transition-colors"
                 >
                   <MessageCircle className="h-5 w-5 shrink-0" />
                   <span>Записаться в WhatsApp</span>
-                </a>
+                </button>
 
                 <div className="mt-5 space-y-3 text-sm leading-6 text-foreground/72">
                   {email ? (

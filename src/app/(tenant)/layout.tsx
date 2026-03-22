@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
 import { getClinicSiteUrl, normalizeHost } from "@/lib/site-url";
 import type { Metadata } from "next";
+import { BookingProvider } from "@/context/BookingContext";
+import { BookingModal } from "@/components/BookingModal";
 
 async function getTenantRequestContext() {
   const headersList = await headers();
@@ -64,7 +66,7 @@ export default async function TenantLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { config, siteUrl } = await getTenantRequestContext();
+  const { slug, config, siteUrl } = await getTenantRequestContext();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -80,7 +82,10 @@ export default async function TenantLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {children}
+      <BookingProvider>
+        {children}
+        <BookingModal config={config} slug={slug} />
+      </BookingProvider>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/clinic/HeroSection";
 import { StickyWhatsAppButton } from "@/components/clinic/StickyWhatsAppButton";
 import { ServicesGrid } from "@/components/clinic/ServicesGrid";
 import { DoctorsRail } from "@/components/clinic/DoctorsRail";
+import { BookingForm } from "@/components/clinic/BookingForm";
 import { ReviewsSection } from "@/components/clinic/ReviewsSection";
 import { FinalContactCTA } from "@/components/clinic/FinalContactCTA";
 import { headers } from "next/headers";
@@ -21,6 +22,7 @@ export default async function Home() {
       <HeroSection config={config} />
       <ServicesGrid config={config} />
       <DoctorsRail config={config} />
+      <BookingForm config={config} slug={slug} />
       <ReviewsSection config={config} />
       <FinalContactCTA config={config} />
       <StickyWhatsAppButton phone={config.contactPhone} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { SiteConfig } from "@/config/site";
+import { useBooking } from "@/context/BookingContext";
 import { motion } from "framer-motion";
 
 interface HeroSectionProps {
@@ -28,14 +29,9 @@ const DESKTOP_FADE_UP = {
   },
 } as const;
 
-function toWhatsAppHref(phone: string): string {
-  const digits = phone.replace(/\D/g, "");
-  return `https://wa.me/${digits}`;
-}
-
 export function HeroSection({ config }: HeroSectionProps) {
-  const whatsAppHref = toWhatsAppHref(config.contactPhone);
   const hasSubtitle = Boolean(config.heroSubtitle?.trim());
+  const { openBooking } = useBooking();
 
   return (
     <section
@@ -66,14 +62,13 @@ export function HeroSection({ config }: HeroSectionProps) {
             ) : null}
 
             <div className="mt-7">
-              <a
-                href={whatsAppHref}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={openBooking}
                 className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-[var(--color-primary)] px-5 py-3 text-base font-semibold text-white shadow-[0_10px_30px_color-mix(in_oklab,var(--color-primary)_30%,transparent)] transition-colors"
               >
                 Записаться в WhatsApp
-              </a>
+              </button>
             </div>
 
             <p className="mt-4 text-sm leading-6 text-white/56">
@@ -111,14 +106,13 @@ export function HeroSection({ config }: HeroSectionProps) {
             ) : null}
 
             <motion.div variants={DESKTOP_FADE_UP} className="mt-8">
-              <a
-                href={whatsAppHref}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={openBooking}
                 className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--color-primary)] px-6 py-3 text-base font-semibold text-white shadow-[0_14px_40px_color-mix(in_oklab,var(--color-primary)_30%,transparent)] transition-transform duration-200 hover:scale-[1.02]"
               >
                 Записаться в WhatsApp
-              </a>
+              </button>
             </motion.div>
 
             <motion.p

@@ -13,27 +13,26 @@ type SortableService = ClinicService & {
 };
 
 function formatTenge(value: number): string {
-  return `${new Intl.NumberFormat("ru-KZ")
-    .format(value)
-    .replace(/\u00A0/g, " ")} ₸`;
+  const normalized = Math.trunc(value).toString();
+  return `${normalized.replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
 }
 
 function formatServicePrice(price: string | null | undefined): string {
   const raw = price?.trim();
-  if (!raw) return "Цена по запросу";
+  if (!raw) return "Р¦РµРЅР° РїРѕ Р·Р°РїСЂРѕСЃСѓ";
 
   const digits = raw.replace(/[^\d]/g, "");
-  if (!digits) return "Цена по запросу";
+  if (!digits) return "Р¦РµРЅР° РїРѕ Р·Р°РїСЂРѕСЃСѓ";
 
   const numeric = Number(digits);
   if (!Number.isFinite(numeric) || numeric <= 0) {
-    return "Цена по запросу";
+    return "Р¦РµРЅР° РїРѕ Р·Р°РїСЂРѕСЃСѓ";
   }
 
-  const isApproximate = /(от|from|≈|~|\+|[-–—])/i.test(raw);
+  const isApproximate = /(РѕС‚|from|в‰€|~|\+|[-вЂ“вЂ”])/i.test(raw);
   const formatted = formatTenge(numeric);
 
-  return isApproximate ? `от ${formatted}` : formatted;
+  return isApproximate ? `РѕС‚ ${formatted}` : formatted;
 }
 
 function getSortedServices(services: readonly ClinicService[]): SortableService[] {
@@ -95,7 +94,7 @@ export function ServicesGrid({ config }: ServicesGridProps) {
               </div>
 
               <div className="mt-8 flex items-center justify-between text-sm font-semibold text-foreground/76">
-                <span>Подробнее</span>
+                <span>РџРѕРґСЂРѕР±РЅРµРµ</span>
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-foreground/10 bg-white/5 text-[var(--color-primary)] transition-transform duration-200 md:group-hover:translate-x-1">
                   <ArrowUpRight className="h-4 w-4" />
                 </span>

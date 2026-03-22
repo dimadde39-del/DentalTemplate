@@ -11,11 +11,6 @@ interface StickyWhatsAppButtonProps {
 
 const SESSION_KEY = "clinic-whatsapp-clicked";
 
-function wasClickedThisSession(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.sessionStorage.getItem(SESSION_KEY) === "1";
-}
-
 function toWhatsAppHref(phone: string): string {
   const digits = phone.replace(/\D/g, "");
   return `https://wa.me/${digits}`;
@@ -29,11 +24,18 @@ export function StickyWhatsAppButton({
   const href = useMemo(() => toWhatsAppHref(phone), [phone]);
 
   const [heroExited, setHeroExited] = useState(false);
-  const [clickedThisSession, setClickedThisSession] = useState(wasClickedThisSession);
-  const [hasShownOnce, setHasShownOnce] = useState(wasClickedThisSession);
+  const [clickedThisSession, setClickedThisSession] = useState(false);
+  const [hasShownOnce, setHasShownOnce] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    const sessionFrameId = window.requestAnimationFrame(() => {
+      if (window.sessionStorage.getItem(SESSION_KEY) === "1") {
+        setClickedThisSession(true);
+        setHasShownOnce(true);
+      }
+    });
 
     const hero = document.getElementById(heroId);
     if (!hero) {
@@ -42,7 +44,10 @@ export function StickyWhatsAppButton({
         setHasShownOnce(true);
       });
 
-      return () => window.cancelAnimationFrame(frameId);
+      return () => {
+        window.cancelAnimationFrame(sessionFrameId);
+        window.cancelAnimationFrame(frameId);
+      };
     }
 
     const observer = new IntersectionObserver(
@@ -61,7 +66,10 @@ export function StickyWhatsAppButton({
 
     observer.observe(hero);
 
-    return () => observer.disconnect();
+    return () => {
+      window.cancelAnimationFrame(sessionFrameId);
+      observer.disconnect();
+    };
   }, [heroId]);
 
   const isVisible = heroExited || clickedThisSession;

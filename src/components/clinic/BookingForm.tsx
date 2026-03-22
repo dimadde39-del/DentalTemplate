@@ -33,6 +33,7 @@ type BookingFormValues = z.infer<typeof bookingFormSchema>;
 interface BookingFormProps {
   readonly config: SiteConfig;
   readonly slug: string;
+  readonly defaultService?: string;
   readonly variant?: "section" | "sheet";
   readonly title?: string;
   readonly subtitle?: string;
@@ -68,6 +69,7 @@ const FIELD_CLASSNAME =
 export function BookingForm({
   config,
   slug,
+  defaultService,
   variant = "section",
   title = "Бесплатная консультация",
   subtitle = "Оставьте заявку, и администратор свяжется с вами, чтобы подобрать удобное время и уточнить детали.",
@@ -76,7 +78,11 @@ export function BookingForm({
 }: BookingFormProps) {
   const supabase = createBrowserClient();
   const serviceOptions = getServiceOptions(config);
-  const defaultService = serviceOptions.length === 1 ? serviceOptions[0] : "";
+  const fallbackService = serviceOptions.length === 1 ? serviceOptions[0] : "";
+  const resolvedDefaultService =
+    defaultService?.trim() && serviceOptions.includes(defaultService.trim())
+      ? defaultService.trim()
+      : fallbackService;
   const isSheet = variant === "sheet";
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -95,12 +101,20 @@ export function BookingForm({
     defaultValues: {
       name: "",
       phone: "",
-      service: defaultService,
+      service: resolvedDefaultService,
       message: "",
     },
   });
 
   const selectedService = watch("service");
+
+  useEffect(() => {
+    setValue("service", resolvedDefaultService, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+  }, [resolvedDefaultService, setValue]);
 
   useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
@@ -151,7 +165,7 @@ export function BookingForm({
     reset({
       name: "",
       phone: "",
-      service: defaultService,
+      service: resolvedDefaultService,
       message: "",
     });
     onSuccess?.();

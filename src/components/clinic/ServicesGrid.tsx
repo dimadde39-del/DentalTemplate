@@ -1,5 +1,8 @@
+"use client";
+
 import { ArrowUpRight } from "lucide-react";
 import { ClinicService, SiteConfig } from "@/config/site";
+import { useBooking } from "@/context/BookingContext";
 
 interface ServicesGridProps {
   readonly config: SiteConfig;
@@ -44,6 +47,7 @@ function getSortedServices(services: readonly ClinicService[]): SortableService[
 
 export function ServicesGrid({ config }: ServicesGridProps) {
   const services = getSortedServices(config.services);
+  const { openBooking } = useBooking();
 
   if (services.length === 0) return null;
 
@@ -66,9 +70,11 @@ export function ServicesGrid({ config }: ServicesGridProps) {
 
         <div className="mt-10 grid grid-cols-1 gap-4 md:mt-14 md:grid-cols-2 md:gap-6">
           {services.map((service) => (
-            <article
+            <button
               key={service.id}
-              className="group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-[28px] border border-foreground/8 bg-foreground/[0.03] p-5 ring-1 ring-white/5 transition-[transform,box-shadow,border-color] duration-200 md:p-7 md:hover:scale-[1.02] md:hover:border-[var(--color-primary)] md:hover:shadow-[0_18px_50px_color-mix(in_oklab,var(--color-primary)_16%,transparent)]"
+              type="button"
+              onClick={() => openBooking(service.name)}
+              className="group relative flex min-h-[220px] w-full flex-col justify-between overflow-hidden rounded-[28px] border border-foreground/8 bg-foreground/[0.03] p-5 text-left ring-1 ring-white/5 transition-[transform,box-shadow,border-color] duration-200 md:p-7 md:hover:scale-[1.02] md:hover:border-[var(--color-primary)] md:hover:shadow-[0_18px_50px_color-mix(in_oklab,var(--color-primary)_16%,transparent)]"
             >
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/60 to-transparent opacity-60" />
 
@@ -94,7 +100,7 @@ export function ServicesGrid({ config }: ServicesGridProps) {
                   <ArrowUpRight className="h-4 w-4" />
                 </span>
               </div>
-            </article>
+            </button>
           ))}
         </div>
       </div>

@@ -64,7 +64,7 @@ export function HeroSection({ config }: HeroSectionProps) {
             <div className="mt-7">
               <button
                 type="button"
-                onClick={openBooking}
+                onClick={() => openBooking()}
                 className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-[var(--color-primary)] px-5 py-3 text-base font-semibold text-white shadow-[0_10px_30px_color-mix(in_oklab,var(--color-primary)_30%,transparent)] transition-colors"
               >
                 Записаться в WhatsApp
@@ -108,7 +108,7 @@ export function HeroSection({ config }: HeroSectionProps) {
             <motion.div variants={DESKTOP_FADE_UP} className="mt-8">
               <button
                 type="button"
-                onClick={openBooking}
+                onClick={() => openBooking()}
                 className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[var(--color-primary)] px-6 py-3 text-base font-semibold text-white shadow-[0_14px_40px_color-mix(in_oklab,var(--color-primary)_30%,transparent)] transition-transform duration-200 hover:scale-[1.02]"
               >
                 Записаться в WhatsApp

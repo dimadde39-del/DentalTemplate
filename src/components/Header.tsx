@@ -42,7 +42,7 @@ export function Header({ config }: HeaderProps) {
         </motion.div>
 
         <button
-          onClick={openBooking}
+          onClick={() => openBooking()}
           className="bg-[var(--color-primary)] text-white px-6 py-2.5 rounded-full font-bold text-sm shadow hover:shadow-md transition-all active:scale-[0.98]"
         >
           Book Now

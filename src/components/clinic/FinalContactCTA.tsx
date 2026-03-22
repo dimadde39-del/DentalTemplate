@@ -68,7 +68,7 @@ export function FinalContactCTA({ config }: FinalContactCTAProps) {
               <div className="relative rounded-[28px] border border-foreground/8 bg-black/[0.12] p-5 ring-1 ring-white/5 sm:p-6">
                 <button
                   type="button"
-                  onClick={openBooking}
+                  onClick={() => openBooking()}
                   className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[var(--color-primary)] px-5 py-3 text-base font-semibold text-white shadow-[0_14px_36px_color-mix(in_oklab,var(--color-primary)_28%,transparent)] transition-colors"
                 >
                   <MessageCircle className="h-5 w-5 shrink-0" />

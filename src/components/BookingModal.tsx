@@ -29,7 +29,7 @@ function toWhatsAppHref(phone: string): string {
 }
 
 export function BookingModal({ config, slug }: BookingModalProps) {
-  const { isOpen, closeBooking } = useBooking();
+  const { isOpen, closeBooking, selectedService } = useBooking();
   const whatsAppHref = toWhatsAppHref(config.contactPhone);
 
   return (
@@ -90,6 +90,7 @@ export function BookingModal({ config, slug }: BookingModalProps) {
               <BookingForm
                 config={config}
                 slug={slug}
+                defaultService={selectedService ?? undefined}
                 variant="sheet"
                 title="Оставить заявку"
                 subtitle="Заполните форму, и мы передадим заявку администратору клиники без звонка и без перезагрузки страницы."

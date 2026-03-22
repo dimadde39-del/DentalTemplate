@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, ChevronDown, MessageSquareText } from "lucide-react";
-import { useState } from "react";
+import { Check, CheckCircle2, ChevronDown, MessageSquareText } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SiteConfig } from "@/config/site";
@@ -12,7 +12,7 @@ const bookingFormSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Укажите имя, чтобы мы знали, как к вам обратиться.")
+    .min(2, "Укажите имя, чтобы мы знали, как к вам обращаться.")
     .max(100, "Имя слишком длинное."),
   phone: z
     .string()
@@ -62,6 +62,9 @@ function buildLeadServiceValue(service: string, message: string | undefined): st
   return `${normalizedService} | Сообщение: ${normalizedMessage}`;
 }
 
+const FIELD_CLASSNAME =
+  "min-h-12 w-full rounded-2xl border border-foreground/10 bg-background px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-foreground/40 focus:border-[var(--color-primary)] focus:bg-foreground/[0.03]";
+
 export function BookingForm({
   config,
   slug,
@@ -77,12 +80,16 @@ export function BookingForm({
   const isSheet = variant === "sheet";
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isServiceMenuOpen, setIsServiceMenuOpen] = useState(false);
+  const serviceMenuRef = useRef<HTMLDivElement | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
+    watch,
   } = useForm<BookingFormValues>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
@@ -92,6 +99,30 @@ export function BookingForm({
       message: "",
     },
   });
+
+  const selectedService = watch("service");
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!serviceMenuRef.current?.contains(event.target as Node)) {
+        setIsServiceMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsServiceMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const onSubmit = async (values: BookingFormValues) => {
     setSubmitError(null);
@@ -116,6 +147,7 @@ export function BookingForm({
     }
 
     setIsSuccess(true);
+    setIsServiceMenuOpen(false);
     reset({
       name: "",
       phone: "",
@@ -126,7 +158,7 @@ export function BookingForm({
   };
 
   const formCard = (
-    <div className="overflow-hidden rounded-[28px] border border-foreground/8 bg-foreground/[0.04] ring-1 ring-white/5">
+    <div className="overflow-hidden rounded-[28px] border border-foreground/8 bg-foreground/[0.04] ring-1 ring-foreground/5">
       <div className="relative px-5 py-6 sm:px-6 sm:py-7">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/70 to-transparent" />
 
@@ -145,10 +177,7 @@ export function BookingForm({
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
             <div className="space-y-2">
-              <label
-                htmlFor="booking-name"
-                className="text-sm font-medium text-foreground/80"
-              >
+              <label htmlFor="booking-name" className="text-sm font-medium text-foreground/80">
                 Имя
               </label>
               <input
@@ -157,7 +186,7 @@ export function BookingForm({
                 type="text"
                 autoComplete="name"
                 placeholder="Как к вам обращаться"
-                className="min-h-12 w-full rounded-2xl border border-foreground/10 bg-black/10 px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-foreground/40 focus:border-[var(--color-primary)] focus:bg-black/15"
+                className={FIELD_CLASSNAME}
               />
               {errors.name ? (
                 <p className="text-sm leading-6 text-foreground/72">{errors.name.message}</p>
@@ -165,10 +194,7 @@ export function BookingForm({
             </div>
 
             <div className="space-y-2">
-              <label
-                htmlFor="booking-phone"
-                className="text-sm font-medium text-foreground/80"
-              >
+              <label htmlFor="booking-phone" className="text-sm font-medium text-foreground/80">
                 Телефон
               </label>
               <input
@@ -177,7 +203,7 @@ export function BookingForm({
                 type="tel"
                 autoComplete="tel"
                 placeholder="+7 707 000 00 00"
-                className="min-h-12 w-full rounded-2xl border border-foreground/10 bg-black/10 px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-foreground/40 focus:border-[var(--color-primary)] focus:bg-black/15"
+                className={FIELD_CLASSNAME}
               />
               {errors.phone ? (
                 <p className="text-sm leading-6 text-foreground/72">{errors.phone.message}</p>
@@ -185,28 +211,56 @@ export function BookingForm({
             </div>
 
             <div className="space-y-2">
-              <label
-                htmlFor="booking-service"
-                className="text-sm font-medium text-foreground/80"
-              >
+              <label htmlFor="booking-service" className="text-sm font-medium text-foreground/80">
                 Услуга
               </label>
-              <div className="relative">
-                <select
+              <input type="hidden" {...register("service")} />
+              <div ref={serviceMenuRef} className="relative">
+                <button
                   id="booking-service"
-                  {...register("service")}
-                  className="min-h-12 w-full appearance-none rounded-2xl border border-foreground/10 bg-black/10 px-4 py-3 pr-11 text-base text-foreground outline-none transition-colors focus:border-[var(--color-primary)] focus:bg-black/15"
+                  type="button"
+                  aria-expanded={isServiceMenuOpen}
+                  aria-haspopup="listbox"
+                  onClick={() => setIsServiceMenuOpen((open) => !open)}
+                  className={`${FIELD_CLASSNAME} flex items-center justify-between text-left`}
                 >
-                  {defaultService ? null : (
-                    <option value="">Выберите услугу</option>
-                  )}
-                  {serviceOptions.map((service) => (
-                    <option key={service} value={service}>
-                      {service}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/45" />
+                  <span className={selectedService ? "text-foreground" : "text-foreground/45"}>
+                    {selectedService || "Выберите услугу"}
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 text-foreground/45 transition-transform ${
+                      isServiceMenuOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {isServiceMenuOpen ? (
+                  <div
+                    role="listbox"
+                    className="absolute z-20 mt-2 max-h-64 w-full overflow-y-auto rounded-2xl border border-foreground/10 bg-background p-2 text-foreground shadow-[0_24px_60px_color-mix(in_oklab,var(--color-primary)_12%,transparent)] ring-1 ring-foreground/5"
+                  >
+                    {serviceOptions.map((service) => (
+                      <button
+                        key={service}
+                        type="button"
+                        onClick={() => {
+                          setValue("service", service, {
+                            shouldDirty: true,
+                            shouldTouch: true,
+                            shouldValidate: true,
+                          });
+                          setIsServiceMenuOpen(false);
+                        }}
+                        className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm text-foreground transition-colors hover:bg-foreground/[0.05]"
+                      >
+                        <span>{service}</span>
+                        {selectedService === service ? (
+                          <Check className="h-4 w-4 text-[var(--color-primary)]" />
+                        ) : null}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </div>
               {errors.service ? (
                 <p className="text-sm leading-6 text-foreground/72">{errors.service.message}</p>
@@ -226,7 +280,7 @@ export function BookingForm({
                 {...register("message")}
                 rows={4}
                 placeholder="Например: удобное время, вопрос по имплантации или пожелание по врачу"
-                className="w-full rounded-2xl border border-foreground/10 bg-black/10 px-4 py-3 text-base text-foreground outline-none transition-colors placeholder:text-foreground/40 focus:border-[var(--color-primary)] focus:bg-black/15"
+                className={FIELD_CLASSNAME}
               />
               {errors.message ? (
                 <p className="text-sm leading-6 text-foreground/72">{errors.message.message}</p>
@@ -234,7 +288,7 @@ export function BookingForm({
             </div>
 
             {submitError ? (
-              <div className="rounded-2xl border border-foreground/10 bg-black/10 px-4 py-3 text-sm leading-6 text-foreground">
+              <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] px-4 py-3 text-sm leading-6 text-foreground">
                 {submitError}
               </div>
             ) : null}

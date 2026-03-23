@@ -47,7 +47,7 @@ export function HeroSection({ config }: HeroSectionProps) {
       <div className="relative mx-auto flex min-h-[100svh] w-full max-w-7xl items-center px-4 pb-8 pt-24 sm:px-6 sm:pb-10 sm:pt-28 lg:px-8">
         <div className="w-full max-w-3xl">
           <div className="md:hidden">
-            <div className="mb-4 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.24em] text-white/72 backdrop-blur">
+            <div className="mb-4 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-medium uppercase tracking-[0.24em] text-white/85 backdrop-blur">
               {config.clinicName}
             </div>
 
@@ -84,7 +84,7 @@ export function HeroSection({ config }: HeroSectionProps) {
           >
             <motion.div
               variants={DESKTOP_FADE_UP}
-              className="mb-5 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium uppercase tracking-[0.26em] text-white/72 backdrop-blur"
+              className="mb-5 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4.5 py-2.5 text-sm font-medium uppercase tracking-[0.26em] text-white/85 backdrop-blur"
             >
               {config.clinicName}
             </motion.div>

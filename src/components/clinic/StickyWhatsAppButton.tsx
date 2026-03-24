@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
+import { toWhatsAppHref } from "./utils";
 
 interface StickyWhatsAppButtonProps {
   readonly phone: string;
@@ -11,53 +11,29 @@ interface StickyWhatsAppButtonProps {
 
 const SESSION_KEY = "clinic-whatsapp-clicked";
 
-function toWhatsAppHref(phone: string): string {
-  const digits = phone.replace(/\D/g, "");
-  return `https://wa.me/${digits}`;
-}
-
 export function StickyWhatsAppButton({
   phone,
   heroId = "clinic-hero",
 }: StickyWhatsAppButtonProps) {
-  const prefersReducedMotion = useReducedMotion();
-  const href = useMemo(() => toWhatsAppHref(phone), [phone]);
-
-  const [heroExited, setHeroExited] = useState(false);
-  const [clickedThisSession, setClickedThisSession] = useState(false);
-  const [hasShownOnce, setHasShownOnce] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const sessionFrameId = window.requestAnimationFrame(() => {
-      if (window.sessionStorage.getItem(SESSION_KEY) === "1") {
-        setClickedThisSession(true);
-        setHasShownOnce(true);
-      }
-    });
+    const clickedBefore = window.sessionStorage.getItem(SESSION_KEY) === "1";
+    if (clickedBefore) {
+      setIsVisible(true);
+    }
 
     const hero = document.getElementById(heroId);
     if (!hero) {
-      const frameId = window.requestAnimationFrame(() => {
-        setHeroExited(true);
-        setHasShownOnce(true);
-      });
-
-      return () => {
-        window.cancelAnimationFrame(sessionFrameId);
-        window.cancelAnimationFrame(frameId);
-      };
+      setIsVisible(true);
+      return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const nextHeroExited = !entry.isIntersecting;
-        setHeroExited(nextHeroExited);
-
-        if (nextHeroExited) {
-          setHasShownOnce(true);
-        }
+        setIsVisible(!entry.isIntersecting || clickedBefore);
       },
       {
         threshold: 0.15,
@@ -67,41 +43,33 @@ export function StickyWhatsAppButton({
     observer.observe(hero);
 
     return () => {
-      window.cancelAnimationFrame(sessionFrameId);
       observer.disconnect();
     };
   }, [heroId]);
-
-  const isVisible = heroExited || clickedThisSession;
 
   const handleClick = () => {
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem(SESSION_KEY, "1");
     }
 
-    setClickedThisSession(true);
-    setHasShownOnce(true);
+    setIsVisible(true);
   };
 
   return (
-    <AnimatePresence>
-      {isVisible ? (
-        <motion.a
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Open WhatsApp chat"
-          onClick={handleClick}
-          initial={prefersReducedMotion || hasShownOnce ? false : { opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 16 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-          className="fixed bottom-[calc(24px+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-12 items-center gap-2 rounded-2xl border border-white/10 bg-[var(--color-primary)] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_40px_color-mix(in_oklab,var(--color-primary)_28%,transparent)] backdrop-blur md:bottom-[60px] md:right-[60px]"
-        >
-          <MessageCircle className="h-4 w-4 shrink-0" />
-          <span>WhatsApp</span>
-        </motion.a>
-      ) : null}
-    </AnimatePresence>
+    <a
+      href={toWhatsAppHref(phone)}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Open WhatsApp chat"
+      onClick={handleClick}
+      className={`fixed bottom-[calc(24px+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-12 items-center gap-2 rounded-2xl border border-[rgba(0,161,214,0.4)] bg-[linear-gradient(180deg,rgba(0,161,214,0.24),rgba(0,161,214,0.14)),rgba(255,255,255,0.03)] px-4 py-3 text-sm font-semibold text-[#eaf8fd] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_18px_38px_rgba(0,161,214,0.1)] backdrop-blur transition-all duration-300 ease-[var(--ease)] motion-reduce:transition-none md:bottom-[60px] md:right-[60px] ${
+        isVisible
+          ? "translate-y-0 opacity-100"
+          : "pointer-events-none translate-y-3 opacity-0"
+      }`}
+    >
+      <MessageCircle className="h-4 w-4 shrink-0" />
+      <span>WhatsApp</span>
+    </a>
   );
 }

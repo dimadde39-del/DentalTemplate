@@ -40,6 +40,7 @@ export interface SiteConfig {
   googleMapsUrl?: string;
   instagramUrl?: string;
   facebookUrl?: string;
+  address?: string | null;
 }
 
 export const siteConfig: SiteConfig = {
@@ -67,4 +68,5 @@ export const siteConfig: SiteConfig = {
   googleMapsUrl: process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL,
   instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL,
   facebookUrl: process.env.NEXT_PUBLIC_FACEBOOK_URL,
+  address: null,
 };

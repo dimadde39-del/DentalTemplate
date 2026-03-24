@@ -1,14 +1,20 @@
 import { HeroSection } from "@/components/clinic/HeroSection";
 import { StickyWhatsAppButton } from "@/components/clinic/StickyWhatsAppButton";
 import { ServicesGrid } from "@/components/clinic/ServicesGrid";
-import { DoctorsRail } from "@/components/clinic/DoctorsRail";
+import { DoctorsGrid } from "@/components/clinic/DoctorsGrid";
 import { BookingForm } from "@/components/clinic/BookingForm";
-import { ReviewsSection } from "@/components/clinic/ReviewsSection";
-import { FinalContactCTA } from "@/components/clinic/FinalContactCTA";
+import { ReviewsGrid } from "@/components/clinic/ReviewsGrid";
+import { ContactCTA } from "@/components/clinic/ContactCTA";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
 import { normalizeHost } from "@/lib/site-url";
+import {
+  extractInstagramHandle,
+  extractRating,
+  extractReviewCount,
+  getAverageRating,
+} from "@/components/clinic/utils";
 
 function getCanonicalClinicUrl(slug: string, domain?: string | null): string {
   const normalizedDomain = normalizeHost(domain);
@@ -28,10 +34,17 @@ export default async function Home() {
   if (!config) notFound();
 
   const canonicalUrl = getCanonicalClinicUrl(slug, config.domain);
-  const address =
-    "address" in config && typeof config.address === "string" && config.address.trim()
-      ? config.address.trim()
-      : null;
+  const address = config.address?.trim() || null;
+  const reviewCount = extractReviewCount([
+    config.testimonialsSubtitle,
+    config.heroSubtitle,
+  ]);
+  const averageRating = getAverageRating(config.reviews);
+  const heroRating = extractRating([
+    config.testimonialsSubtitle,
+    config.heroSubtitle,
+  ]) ?? averageRating;
+  const instagramHandle = extractInstagramHandle(config.instagramUrl);
   const schema = {
     "@context": "https://schema.org",
     "@type": ["MedicalOrganization", "Dentist", "LocalBusiness"],
@@ -74,12 +87,41 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <HeroSection config={config} />
-      <ServicesGrid config={config} />
-      <DoctorsRail config={config} />
+      <HeroSection
+        name={config.clinicName}
+        heroTitle={config.heroTitle}
+        heroSubtitle={config.heroSubtitle}
+        phone={config.contactPhone}
+        stats={{
+          reviews: reviewCount.value ?? config.reviews.length,
+          reviewsSuffix: reviewCount.suffix,
+          rating: heroRating,
+          specialists: config.doctors.length,
+          instagram: instagramHandle,
+        }}
+      />
+      <ServicesGrid
+        services={config.services}
+        title={config.servicesTitle}
+        subtitle={config.servicesSubtitle}
+      />
+      <DoctorsGrid
+        doctors={config.doctors}
+        title={config.doctorsTitle}
+        subtitle={config.doctorsSubtitle}
+      />
       <BookingForm config={config} slug={slug} />
-      <ReviewsSection config={config} />
-      <FinalContactCTA config={config} />
+      <ReviewsGrid
+        reviews={config.reviews}
+        testimonialsTitle={config.testimonialsTitle}
+        testimonialsSubtitle={config.testimonialsSubtitle}
+      />
+      <ContactCTA
+        phone={config.contactPhone}
+        email={config.contactEmail}
+        instagramUrl={config.instagramUrl ?? null}
+        address={address}
+      />
       <StickyWhatsAppButton phone={config.contactPhone} />
     </main>
   );

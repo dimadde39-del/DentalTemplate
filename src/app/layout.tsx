@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter, Syne } from "next/font/google";
+import { Geist_Mono, Jura, Onest } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const onest = Onest({
+  variable: "--font-onest",
   subsets: ["latin", "cyrillic"],
   display: "swap",
 });
 
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
+const jura = Jura({
+  variable: "--font-jura",
+  subsets: ["latin", "cyrillic"],
   display: "swap",
 });
 
@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${syne.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
+        className={`${onest.variable} ${jura.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
       >
         {children}
       </body>

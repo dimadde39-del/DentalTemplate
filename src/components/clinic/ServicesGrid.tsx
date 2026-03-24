@@ -14,25 +14,29 @@ type SortableService = ClinicService & {
 
 function formatTenge(value: number): string {
   const normalized = Math.trunc(value).toString();
-  return `${normalized.replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
+  return `${normalized.replace(/\B(?=(\d{3})+(?!\d))/g, " ")} \u20B8`;
 }
 
 function formatServicePrice(price: string | null | undefined): string {
   const raw = price?.trim();
-  if (!raw) return "Р¦РµРЅР° РїРѕ Р·Р°РїСЂРѕСЃСѓ";
+  if (!raw) return "\u0426\u0435\u043d\u0430 \u043f\u043e \u0437\u0430\u043f\u0440\u043e\u0441\u0443";
 
   const digits = raw.replace(/[^\d]/g, "");
-  if (!digits) return "Р¦РµРЅР° РїРѕ Р·Р°РїСЂРѕСЃСѓ";
+  if (!digits) {
+    return "\u0426\u0435\u043d\u0430 \u043f\u043e \u0437\u0430\u043f\u0440\u043e\u0441\u0443";
+  }
 
   const numeric = Number(digits);
   if (!Number.isFinite(numeric) || numeric <= 0) {
-    return "Р¦РµРЅР° РїРѕ Р·Р°РїСЂРѕСЃСѓ";
+    return "\u0426\u0435\u043d\u0430 \u043f\u043e \u0437\u0430\u043f\u0440\u043e\u0441\u0443";
   }
 
-  const isApproximate = /(РѕС‚|from|в‰€|~|\+|[-вЂ“вЂ”])/i.test(raw);
+  const isApproximate = /(\u043e\u0442|from|\u2248|~|\+|[-\u2013\u2014])/i.test(raw);
   const formatted = formatTenge(numeric);
 
-  return isApproximate ? `РѕС‚ ${formatted}` : formatted;
+  return isApproximate
+    ? `\u043e\u0442 ${formatted}`
+    : formatted;
 }
 
 function getSortedServices(services: readonly ClinicService[]): SortableService[] {
@@ -94,7 +98,7 @@ export function ServicesGrid({ config }: ServicesGridProps) {
               </div>
 
               <div className="mt-8 flex items-center justify-between text-sm font-semibold text-foreground/76">
-                <span>РџРѕРґСЂРѕР±РЅРµРµ</span>
+                <span>{"\u041f\u043e\u0434\u0440\u043e\u0431\u043d\u0435\u0435"}</span>
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-foreground/10 bg-white/5 text-[var(--color-primary)] transition-transform duration-200 md:group-hover:translate-x-1">
                   <ArrowUpRight className="h-4 w-4" />
                 </span>

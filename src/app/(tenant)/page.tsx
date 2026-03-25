@@ -9,6 +9,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
 import { normalizeHost } from "@/lib/site-url";
+import { resolveClinicVariant, VARIANTS } from "@/lib/tenant/variants";
 import {
   extractInstagramHandle,
   extractRating,
@@ -45,6 +46,8 @@ export default async function Home() {
     config.heroSubtitle,
   ]) ?? averageRating;
   const instagramHandle = extractInstagramHandle(config.instagramUrl);
+  const variant = resolveClinicVariant(config.theme?.variant);
+  const labels = VARIANTS[variant].labels;
   const schema = {
     "@context": "https://schema.org",
     "@type": ["MedicalOrganization", "Dentist", "LocalBusiness"],
@@ -92,6 +95,7 @@ export default async function Home() {
         heroTitle={config.heroTitle}
         heroSubtitle={config.heroSubtitle}
         phone={config.contactPhone}
+        labels={labels}
         stats={{
           reviews: reviewCount.value ?? config.reviews.length,
           reviewsSuffix: reviewCount.suffix,
@@ -104,23 +108,27 @@ export default async function Home() {
         services={config.services}
         title={config.servicesTitle}
         subtitle={config.servicesSubtitle}
+        labels={labels}
       />
       <DoctorsGrid
         doctors={config.doctors}
         title={config.doctorsTitle}
         subtitle={config.doctorsSubtitle}
+        labels={labels}
       />
       <BookingForm config={config} slug={slug} />
       <ReviewsGrid
         reviews={config.reviews}
         testimonialsTitle={config.testimonialsTitle}
         testimonialsSubtitle={config.testimonialsSubtitle}
+        labels={labels}
       />
       <ContactCTA
         phone={config.contactPhone}
         email={config.contactEmail}
         instagramUrl={config.instagramUrl ?? null}
         address={address}
+        labels={labels}
       />
       <StickyWhatsAppButton phone={config.contactPhone} />
     </main>

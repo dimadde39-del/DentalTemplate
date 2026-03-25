@@ -1,7 +1,9 @@
 import { unstable_cache } from 'next/cache';
+import { createClient } from '@supabase/supabase-js';
 import { supabaseAnon } from '@/lib/supabase-server';
 import { siteConfig as fallbackConfig, SiteConfig } from '@/config/site';
 import { getClinicSiteUrl } from '@/lib/site-url';
+import { resolveClinicVariant } from '@/lib/tenant/variants';
 
 type PublicContent = Partial<{
   hero_title: string;
@@ -14,6 +16,101 @@ type PublicContent = Partial<{
   testimonials_subtitle: string;
 }>;
 
+type PublicClinicTheme = Partial<{
+  variant: string | null;
+  accent: string | null;
+  accent2: string | null;
+  bg: string | null;
+  logo_url: string | null;
+  font_family: string | null;
+}>;
+
+type AdminThemeSettingRow = {
+  key: string;
+  value: string | null;
+};
+
+function createAdminClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) return null;
+
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
+
+async function getClinicThemeData(slug: string): Promise<{
+  theme: PublicClinicTheme | null;
+  variantSetting: string | null;
+}> {
+  const supabase = createAdminClient();
+  if (!supabase) {
+    return {
+      theme: null,
+      variantSetting: null,
+    };
+  }
+
+  const { data: clinicRow, error: clinicError } = await supabase
+    .from('clinics')
+    .select('*')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (clinicError || !clinicRow || typeof clinicRow !== 'object') {
+    return {
+      theme: null,
+      variantSetting: null,
+    };
+  }
+
+  const clinicRecord = clinicRow as Record<string, unknown>;
+  const rawTheme = clinicRecord.theme;
+  const theme =
+    rawTheme && typeof rawTheme === 'object' ? (rawTheme as PublicClinicTheme) : null;
+
+  if (theme?.variant) {
+    return {
+      theme,
+      variantSetting: null,
+    };
+  }
+
+  const clinicId = typeof clinicRecord.id === 'string' ? clinicRecord.id : null;
+  if (!clinicId) {
+    return {
+      theme,
+      variantSetting: null,
+    };
+  }
+
+  const { data: settingRows, error: settingsError } = await supabase
+    .from('settings')
+    .select('key, value')
+    .eq('clinic_id', clinicId)
+    .eq('key', 'theme_variant')
+    .limit(1);
+
+  if (settingsError) {
+    return {
+      theme,
+      variantSetting: null,
+    };
+  }
+
+  const setting = (settingRows?.[0] ?? null) as AdminThemeSettingRow | null;
+
+  return {
+    theme,
+    variantSetting: setting?.value?.trim() || null,
+  };
+}
+
 export async function getSiteConfig(slug: string): Promise<SiteConfig | null> {
   return unstable_cache(
     async (slug: string) => {
@@ -25,6 +122,7 @@ export async function getSiteConfig(slug: string): Promise<SiteConfig | null> {
 
       const clinic = data.clinic;
       if (!clinic) return null;
+      const { theme, variantSetting } = await getClinicThemeData(slug);
       const content =
         data.content && typeof data.content === "object" ? (data.content as PublicContent) : {};
       const clinicName = clinic.name || fallbackConfig.clinicName;
@@ -54,6 +152,15 @@ export async function getSiteConfig(slug: string): Promise<SiteConfig | null> {
         googleMapsUrl: clinic.google_maps_url || fallbackConfig.googleMapsUrl,
         instagramUrl: clinic.instagram_url || fallbackConfig.instagramUrl,
         facebookUrl: clinic.facebook_url || fallbackConfig.facebookUrl,
+        theme: {
+          ...(fallbackConfig.theme ?? {}),
+          ...(theme ?? {}),
+          variant: resolveClinicVariant(
+            theme?.variant ?? variantSetting ?? fallbackConfig.theme?.variant
+          ),
+          accent:
+            theme?.accent?.trim() || clinic.primary_color || fallbackConfig.primaryColor,
+        },
       };
     },
     ['tenant-config', slug],

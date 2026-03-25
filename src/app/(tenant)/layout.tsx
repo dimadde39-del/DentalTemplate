@@ -5,6 +5,8 @@ import { normalizeHost } from "@/lib/site-url";
 import type { Metadata } from "next";
 import { BookingProvider } from "@/context/BookingContext";
 import { BookingModal } from "@/components/BookingModal";
+import { TenantThemeProvider } from "@/lib/tenant/TenantThemeProvider";
+import { resolveClinicVariant } from "@/lib/tenant/variants";
 
 function getCanonicalClinicUrl(slug: string, domain?: string | null): string {
   const normalizedDomain = normalizeHost(domain);
@@ -64,13 +66,15 @@ export default async function TenantLayout({
   children: React.ReactNode;
 }>) {
   const { slug, config } = await getTenantRequestContext();
+  const variant = resolveClinicVariant(config.theme?.variant);
+  const accent = config.theme?.accent?.trim() || config.primaryColor;
 
   return (
-    <div style={{ "--primary": config.primaryColor } as React.CSSProperties} className="min-h-screen">
+    <TenantThemeProvider variant={variant} accent={accent}>
       <BookingProvider>
         {children}
         <BookingModal config={config} slug={slug} />
       </BookingProvider>
-    </div>
+    </TenantThemeProvider>
   );
 }

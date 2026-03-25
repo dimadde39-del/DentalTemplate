@@ -62,7 +62,7 @@ export function StickyWhatsAppButton({
       rel="noreferrer"
       aria-label="Open WhatsApp chat"
       onClick={handleClick}
-      className={`fixed bottom-[calc(24px+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-12 items-center gap-2 rounded-2xl border border-[rgba(0,161,214,0.4)] bg-[linear-gradient(180deg,rgba(0,161,214,0.24),rgba(0,161,214,0.14)),rgba(255,255,255,0.03)] px-4 py-3 text-sm font-semibold text-[#eaf8fd] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_18px_38px_rgba(0,161,214,0.1)] backdrop-blur transition-all duration-300 ease-[var(--ease)] motion-reduce:transition-none md:bottom-[60px] md:right-[60px] ${
+      className={`fixed bottom-[calc(24px+env(safe-area-inset-bottom))] right-4 z-50 inline-flex min-h-12 items-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--accent)_42%,transparent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_24%,transparent),color-mix(in_oklab,var(--accent)_14%,transparent)),color-mix(in_oklab,var(--text)_3%,transparent)] px-4 py-3 text-sm font-semibold text-white shadow-[inset_0_1px_0_color-mix(in_oklab,var(--text)_10%,transparent),0_18px_38px_color-mix(in_oklab,var(--accent)_18%,transparent)] backdrop-blur transition-all duration-300 ease-[var(--ease)] motion-reduce:transition-none md:bottom-[60px] md:right-[60px] ${
         isVisible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-3 opacity-0"

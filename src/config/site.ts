@@ -1,3 +1,5 @@
+import type { ClinicVariant } from "@/lib/tenant/variants";
+
 export interface ClinicService {
   id: string;
   name: string;
@@ -17,6 +19,15 @@ export interface ClinicReview {
   author: string;
   rating: number;
   comment: string;
+}
+
+export interface ClinicThemeConfig {
+  variant?: ClinicVariant | null;
+  accent?: string | null;
+  accent2?: string | null;
+  bg?: string | null;
+  logo_url?: string | null;
+  font_family?: string | null;
 }
 
 export interface SiteConfig {
@@ -41,6 +52,7 @@ export interface SiteConfig {
   instagramUrl?: string;
   facebookUrl?: string;
   address?: string | null;
+  theme?: ClinicThemeConfig | null;
 }
 
 export const siteConfig: SiteConfig = {
@@ -69,4 +81,8 @@ export const siteConfig: SiteConfig = {
   instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL,
   facebookUrl: process.env.NEXT_PUBLIC_FACEBOOK_URL,
   address: null,
+  theme: {
+    variant: "dark-tech",
+    accent: process.env.NEXT_PUBLIC_PRIMARY_COLOR || "#0ea5e9",
+  },
 };

@@ -24,6 +24,14 @@
   --line-strong: rgba(255, 255, 255, 0.18);
   --spotlight: rgba(0, 161, 214, 0.11);
   --ambient: rgba(255, 255, 255, 0.06);
+  --page-top: #07090c;
+  --page-bottom: #080a0d;
+  --grid-line: rgba(255, 255, 255, 0.018);
+  --grid-opacity: 0.46;
+  --noise-dot: rgba(255, 255, 255, 0.05);
+  --noise-opacity: 0.06;
+  --font-heading: var(--font-jura);
+  --font-body: var(--font-onest);
 }
 
 @theme inline {
@@ -35,8 +43,8 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
-  --font-sans: var(--font-onest);
-  --font-display: var(--font-jura);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -51,40 +59,13 @@ html {
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 15% 15%, rgba(0, 161, 214, 0.11), transparent 0 22%),
-    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.055), transparent 0 18%),
-    linear-gradient(180deg, #07090c 0%, #050608 36%, #080a0d 100%);
+  background: var(--bg);
   color: var(--text);
-  font-family: var(--font-onest), Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-  background-size: 80px 80px;
-  mask-image: radial-gradient(circle at center, black 42%, transparent 95%);
-  opacity: 0.46;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 0.5px, transparent 0.5px);
-  background-size: 5px 5px;
-  mix-blend-mode: soft-light;
-  opacity: 0.06;
 }
 
 h1,
@@ -93,7 +74,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-jura), var(--font-onest), Arial, Helvetica, sans-serif;
+  font-family: var(--font-heading), var(--font-body), Arial, Helvetica, sans-serif;
   font-feature-settings: "ss01" 1;
 }
 

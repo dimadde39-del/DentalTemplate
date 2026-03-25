@@ -1,6 +1,7 @@
 "use client";
 
 import { Instagram, Mail, MapPin, MessageCircle, PhoneCall } from "lucide-react";
+import type { ClinicVariantLabels } from "@/lib/tenant/variants";
 import { extractInstagramHandle, toTelHref, toWhatsAppHref } from "./utils";
 import { useClinicSectionEffects } from "./useClinicSectionEffects";
 
@@ -9,6 +10,10 @@ export interface ContactCTAProps {
   readonly email: string | null;
   readonly instagramUrl: string | null;
   readonly address: string | null;
+  readonly labels: Pick<
+    ClinicVariantLabels,
+    "contactEyebrow" | "contactTitle" | "contactPrimaryCta" | "contactSecondaryCta"
+  >;
 }
 
 export function ContactCTA({
@@ -16,6 +21,7 @@ export function ContactCTA({
   email,
   instagramUrl,
   address,
+  labels,
 }: ContactCTAProps) {
   const sectionRef = useClinicSectionEffects<HTMLDivElement>();
   const instagramHandle = extractInstagramHandle(instagramUrl);
@@ -28,16 +34,16 @@ export function ContactCTA({
         ref={sectionRef}
         className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"
       >
-        <div className="reveal overflow-hidden rounded-[24px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),transparent_34%),rgba(255,255,255,0.028)] px-6 py-7 shadow-[var(--shadow-card)] sm:px-8 lg:px-10">
+        <div className="reveal overflow-hidden rounded-[24px] border border-[var(--line)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--text)_4%,transparent),transparent_34%),var(--surface)] px-6 py-7 shadow-[var(--shadow-card)] sm:px-8 lg:px-10">
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
             <div>
-              <span className="inline-flex items-center gap-3 text-[0.8rem] uppercase tracking-[0.22em] text-white/80">
-                <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,rgba(0,161,214,0.9))]" />
-                <span>Contact / direct line</span>
+              <span className="inline-flex items-center gap-3 text-[0.8rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+                <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,color-mix(in_oklab,var(--accent)_80%,transparent))]" />
+                <span>{labels.contactEyebrow}</span>
               </span>
 
               <h2 className="mt-3 max-w-[16ch] text-[clamp(1.6rem,2.8vw,3rem)] font-bold leading-[1.02] tracking-[-0.06em] text-[var(--text)]">
-                Связаться быстро, без лишних шагов
+                {labels.contactTitle}
               </h2>
 
               <a
@@ -51,7 +57,7 @@ export function ContactCTA({
                 {email?.trim() ? (
                   <a
                     href={`mailto:${email}`}
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/8 bg-white/[0.02] px-4 transition-colors hover:border-white/16 hover:text-[var(--text)]"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--line)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface-strong)_92%,transparent)] px-4 transition-colors hover:border-[color-mix(in_oklab,var(--text)_16%,var(--line))] hover:text-[var(--text)]"
                   >
                     <Mail className="h-4 w-4 text-[var(--accent)]" />
                     <span>{email}</span>
@@ -63,7 +69,7 @@ export function ContactCTA({
                     href={instagramUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/8 bg-white/[0.02] px-4 transition-colors hover:border-white/16 hover:text-[var(--text)]"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--line)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface-strong)_92%,transparent)] px-4 transition-colors hover:border-[color-mix(in_oklab,var(--text)_16%,var(--line))] hover:text-[var(--text)]"
                   >
                     <Instagram className="h-4 w-4 text-[var(--accent)]" />
                     <span>{instagramHandle}</span>
@@ -71,7 +77,7 @@ export function ContactCTA({
                 ) : null}
 
                 {address?.trim() ? (
-                  <span className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/8 bg-white/[0.02] px-4">
+                  <span className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--line)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface-strong)_92%,transparent)] px-4">
                     <MapPin className="h-4 w-4 text-[var(--accent)]" />
                     <span>{address}</span>
                   </span>
@@ -84,18 +90,18 @@ export function ContactCTA({
                 href={toWhatsAppHref(phone)}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[rgba(0,161,214,0.4)] bg-[linear-gradient(180deg,rgba(0,161,214,0.24),rgba(0,161,214,0.14)),rgba(255,255,255,0.03)] px-6 text-sm font-semibold text-[#eaf8fd] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_18px_38px_rgba(0,161,214,0.1)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[rgba(0,161,214,0.52)]"
+                className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--accent)_42%,transparent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_24%,transparent),color-mix(in_oklab,var(--accent)_14%,transparent)),color-mix(in_oklab,var(--text)_3%,transparent)] px-6 text-sm font-semibold text-white shadow-[inset_0_1px_0_color-mix(in_oklab,var(--text)_10%,transparent),0_18px_38px_color-mix(in_oklab,var(--accent)_18%,transparent)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[var(--accent)]"
               >
                 <MessageCircle className="h-4 w-4" />
-                <span>Написать в WhatsApp</span>
+                <span>{labels.contactPrimaryCta}</span>
               </a>
 
               <a
                 href={toTelHref(phone)}
-                className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white/[0.02] px-6 text-sm font-semibold text-[var(--text)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05]"
+                className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-[color-mix(in_oklab,var(--surface)_88%,transparent)] px-6 text-sm font-semibold text-[var(--text)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--text)_18%,var(--line))] hover:bg-[color-mix(in_oklab,var(--surface-strong)_80%,transparent)]"
               >
                 <PhoneCall className="h-4 w-4 text-[var(--accent)]" />
-                <span>Позвонить сейчас</span>
+                <span>{labels.contactSecondaryCta}</span>
               </a>
             </div>
           </div>

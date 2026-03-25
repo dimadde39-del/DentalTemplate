@@ -1,6 +1,7 @@
 import type { LeadStatus } from "@/components/StatusToggle";
 import { revalidatePath } from "next/cache";
-import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import { getSiteConfig } from "@/lib/tenant";
 import { assertTenantOwnership, getCurrentClinicId } from "@/lib/assertTenantOwnership";
 import { createServerClient } from "@/lib/supabase-server";
@@ -11,17 +12,97 @@ import { LeadTableClient } from "@/components/LeadTableClient";
 // Ensure the page is dynamically rendered to access headers
 export const dynamic = "force-dynamic";
 
+type ClinicRow = {
+  id: string;
+  slug: string;
+  name: string;
+};
+
+type ProfileRow = {
+  clinic_id: string | null;
+};
+
+async function getClinicById(id: string): Promise<ClinicRow | null> {
+  const supabase = await createServerClient();
+  const { data, error } = await supabase
+    .from("clinics")
+    .select("id, slug, name")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to resolve clinic by id:", error.message);
+    return null;
+  }
+
+  return (data as ClinicRow | null) ?? null;
+}
+
+async function getClinicBySlug(slug: string): Promise<ClinicRow | null> {
+  const supabase = await createServerClient();
+  const { data, error } = await supabase
+    .from("clinics")
+    .select("id, slug, name")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to resolve clinic by slug:", error.message);
+    return null;
+  }
+
+  return (data as ClinicRow | null) ?? null;
+}
+
+async function getAuthenticatedProfile(): Promise<ProfileRow | null> {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("clinic_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to load admin profile:", error.message);
+    return null;
+  }
+
+  return (data as ProfileRow | null) ?? null;
+}
 
 // Server action
-async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
+async function updateLeadStatusForClinic(
+  clinicId: string,
+  slug: string,
+  leadId: string,
+  newStatus: LeadStatus
+) {
   "use server";
   const supabase = await createServerClient();
 
-  // Resolve clinic from authenticated user's profile
-  const clinicId = await getCurrentClinicId();
+  let currentClinicId: string;
+  try {
+    currentClinicId = await getCurrentClinicId();
+  } catch {
+    return { success: false, error: "Unauthorized." };
+  }
+
+  if (currentClinicId !== clinicId) {
+    return { success: false, error: "Cross-tenant access denied." };
+  }
 
   // Application-layer tenant guard (defense-in-depth on top of RLS)
-  await assertTenantOwnership("leads", leadId, clinicId);
+  try {
+    await assertTenantOwnership("leads", leadId, clinicId);
+  } catch {
+    return { success: false, error: "Cross-tenant access denied." };
+  }
 
   const { error } = await supabase
     .from("leads")
@@ -33,16 +114,23 @@ async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
     return { success: false, error: error.message };
   }
   
+  revalidatePath(`/clinic/${slug}/admin`);
   revalidatePath("/admin");
   return { success: true };
 }
 
-async function LeadsData({ tenantId }: { tenantId: string }) {
+async function LeadsData({
+  clinicId,
+  onStatusChange,
+}: {
+  clinicId: string;
+  onStatusChange: (leadId: string, newStatus: LeadStatus) => Promise<{ success: boolean; error?: string }>;
+}) {
   const supabase = await createServerClient();
   const { data: leads, error } = await supabase
     .from("leads")
     .select("*")
-    .eq("clinic_id", tenantId)
+    .eq("clinic_id", clinicId)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -53,36 +141,33 @@ async function LeadsData({ tenantId }: { tenantId: string }) {
     );
   }
 
-  return <LeadTableClient leads={leads || []} tenantId={tenantId} onStatusChange={updateLeadStatus} />;
+  return <LeadTableClient leads={leads || []} onStatusChange={onStatusChange} />;
 }
 
 export default async function AdminPage() {
-  const supabase = await createServerClient();
-
-  // Resolve clinic from authenticated user's profile (not from headers)
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) notFound();
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('clinic_id')
-    .eq('user_id', user.id)
-    .single();
+  const headersList = await headers();
+  const requestedSlug = headersList.get("x-tenant-slug")?.trim().toLowerCase() ?? null;
+  const profile = await getAuthenticatedProfile();
 
   if (!profile?.clinic_id) notFound();
 
-  const tenantId = profile.clinic_id;
+  const profileClinic = await getClinicById(profile.clinic_id);
+  if (!profileClinic) notFound();
 
-  const { data: clinic } = await supabase
-    .from('clinics')
-    .select('slug, name')
-    .eq('id', tenantId)
-    .single();
+  if (!requestedSlug) {
+    redirect(`/clinic/${profileClinic.slug}/admin`);
+  }
 
+  const clinic = await getClinicBySlug(requestedSlug);
   if (!clinic) notFound();
+
+  if (clinic.id !== profileClinic.id) {
+    notFound();
+  }
 
   const config = await getSiteConfig(clinic.slug);
   if (!config) notFound();
+  const onStatusChange = updateLeadStatusForClinic.bind(null, clinic.id, clinic.slug);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-6 md:p-12">
@@ -95,7 +180,7 @@ export default async function AdminPage() {
         </header>
 
         <Suspense fallback={<LeadSkeleton />}>
-          <LeadsData tenantId={tenantId} />
+          <LeadsData clinicId={clinic.id} onStatusChange={onStatusChange} />
         </Suspense>
       </div>
     </div>

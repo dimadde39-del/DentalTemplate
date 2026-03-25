@@ -15,11 +15,10 @@ interface Lead {
 
 interface Props {
   readonly leads: Lead[];
-  readonly tenantId: string;
   readonly onStatusChange: (leadId: string, newStatus: LeadStatus) => Promise<{ success: boolean; error?: string }>;
 }
 
-export function LeadTableClient({ leads, tenantId, onStatusChange }: Props) {
+export function LeadTableClient({ leads, onStatusChange }: Props) {
   return (
     <motion.div
       variants={FADE_VARIANTS}
@@ -43,7 +42,7 @@ export function LeadTableClient({ leads, tenantId, onStatusChange }: Props) {
             {!leads || leads.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-6 py-8 text-center text-zinc-500">
-                  No leads found for tenant {tenantId}.
+                  No leads found for this clinic.
                 </td>
               </tr>
             ) : (

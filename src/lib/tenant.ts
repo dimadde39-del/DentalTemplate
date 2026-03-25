@@ -48,31 +48,24 @@ async function getClinicThemeData(slug: string): Promise<{
   theme: PublicClinicTheme | null;
   variantSetting: string | null;
 }> {
-  const supabase = createAdminClient();
-  if (!supabase) {
-    return {
-      theme: null,
-      variantSetting: null,
-    };
-  }
-
-  const { data: clinicRow, error: clinicError } = await supabase
+  const { data: publicClinicRow, error: publicClinicError } = await supabaseAnon
     .from('clinics')
-    .select('*')
+    .select('id, theme')
     .eq('slug', slug)
     .maybeSingle();
 
-  if (clinicError || !clinicRow || typeof clinicRow !== 'object') {
-    return {
-      theme: null,
-      variantSetting: null,
-    };
-  }
-
-  const clinicRecord = clinicRow as Record<string, unknown>;
-  const rawTheme = clinicRecord.theme;
-  const theme =
-    rawTheme && typeof rawTheme === 'object' ? (rawTheme as PublicClinicTheme) : null;
+  const publicClinicRecord =
+    !publicClinicError && publicClinicRow && typeof publicClinicRow === "object"
+      ? (publicClinicRow as Record<string, unknown>)
+      : null;
+  let clinicId =
+    publicClinicRecord && typeof publicClinicRecord.id === "string"
+      ? publicClinicRecord.id
+      : null;
+  let theme =
+    publicClinicRecord?.theme && typeof publicClinicRecord.theme === "object"
+      ? (publicClinicRecord.theme as PublicClinicTheme)
+      : null;
 
   if (theme?.variant) {
     return {
@@ -81,8 +74,32 @@ async function getClinicThemeData(slug: string): Promise<{
     };
   }
 
-  const clinicId = typeof clinicRecord.id === 'string' ? clinicRecord.id : null;
-  if (!clinicId) {
+  const supabase = createAdminClient();
+  if (supabase && (!clinicId || !theme?.variant)) {
+    const { data: adminClinicRow, error: adminClinicError } = await supabase
+      .from('clinics')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (!adminClinicError && adminClinicRow && typeof adminClinicRow === "object") {
+      const adminClinicRecord = adminClinicRow as Record<string, unknown>;
+      clinicId =
+        clinicId || (typeof adminClinicRecord.id === "string" ? adminClinicRecord.id : null);
+      if (!theme && adminClinicRecord.theme && typeof adminClinicRecord.theme === "object") {
+        theme = adminClinicRecord.theme as PublicClinicTheme;
+      }
+    }
+  }
+
+  if (theme?.variant) {
+    return {
+      theme,
+      variantSetting: null,
+    };
+  }
+
+  if (!supabase || !clinicId) {
     return {
       theme,
       variantSetting: null,

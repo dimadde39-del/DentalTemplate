@@ -1,17 +1,12 @@
 "use client";
 
-import type { ClinicVariant, ClinicVariantLabels } from "@/lib/tenant/variants";
-import { ClinicReview } from "@/config/site";
-import { getVisibleReviews } from "./utils";
-import { useClinicSectionEffects } from "./useClinicSectionEffects";
+import type { ReviewsGridProps } from "@/components/clinic/template-props";
+import { getVisibleReviews } from "@/components/clinic/utils";
+import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
 
-export interface ReviewsGridProps {
-  readonly variant: ClinicVariant;
-  readonly reviews: readonly ClinicReview[];
-  readonly testimonialsTitle: string;
-  readonly testimonialsSubtitle: string;
-  readonly labels: Pick<ClinicVariantLabels, "reviewsEyebrow">;
-}
+const SECTION_LABELS = {
+  eyebrow: "Reviews / social proof",
+} as const;
 
 function formatRating(value: number): string {
   if (!Number.isFinite(value) || value <= 0) {
@@ -22,11 +17,9 @@ function formatRating(value: number): string {
 }
 
 export function ReviewsGrid({
-  variant,
   reviews,
   testimonialsTitle,
   testimonialsSubtitle,
-  labels,
 }: ReviewsGridProps) {
   const sectionRef = useClinicSectionEffects<HTMLDivElement>();
   const visibleReviews = getVisibleReviews(reviews);
@@ -34,11 +27,7 @@ export function ReviewsGrid({
   if (visibleReviews.length === 0) return null;
 
   return (
-    <section
-      id="reviews"
-      data-variant={variant}
-      className="pt-[clamp(88px,10vw,144px)]"
-    >
+    <section id="reviews" className="pt-[clamp(88px,10vw,144px)]">
       <div
         ref={sectionRef}
         className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"
@@ -46,7 +35,7 @@ export function ReviewsGrid({
         <div className="reveal mb-8 grid gap-4 lg:mb-10">
           <span className="inline-flex items-center gap-3 text-[0.8rem] uppercase tracking-[0.22em] text-[var(--muted)]">
             <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,color-mix(in_oklab,var(--accent)_80%,transparent))]" />
-            <span>{labels.reviewsEyebrow}</span>
+            <span>{SECTION_LABELS.eyebrow}</span>
           </span>
           <h2 className="max-w-[14ch] text-[clamp(2.1rem,4vw,4rem)] font-bold leading-[0.98] tracking-[-0.06em] text-[var(--text)]">
             {testimonialsTitle}

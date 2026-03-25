@@ -1,29 +1,26 @@
 "use client";
 
 import Image from "next/image";
-import type { ClinicVariant, ClinicVariantLabels } from "@/lib/tenant/variants";
-import { ClinicDoctor } from "@/config/site";
+import type { DoctorsGridProps } from "@/components/clinic/template-props";
 import {
   getDoctorInitials,
   getVisibleDoctors,
   normalizeDoctorPhotoSrc,
-} from "./utils";
-import { useClinicSectionEffects } from "./useClinicSectionEffects";
+} from "@/components/clinic/utils";
+import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
 
-export interface DoctorsGridProps {
-  readonly variant: ClinicVariant;
-  readonly doctors: readonly ClinicDoctor[];
-  readonly title: string;
-  readonly subtitle: string;
-  readonly labels: Pick<ClinicVariantLabels, "doctorsEyebrow" | "doctorPrefix">;
-}
+const SECTION_LABELS = {
+  eyebrow: "Doctors / expertise",
+  title: "Meet the Specialists",
+  subtitle:
+    "Experienced clinicians focused on comfort, precision, and long-term outcomes.",
+  doctorPrefix: "Doctor",
+} as const;
 
 export function DoctorsGrid({
-  variant,
   doctors,
   title,
   subtitle,
-  labels,
 }: DoctorsGridProps) {
   const sectionRef = useClinicSectionEffects<HTMLDivElement>();
   const visibleDoctors = getVisibleDoctors(doctors);
@@ -31,11 +28,7 @@ export function DoctorsGrid({
   if (visibleDoctors.length === 0) return null;
 
   return (
-    <section
-      id="doctors"
-      data-variant={variant}
-      className="pt-[clamp(88px,10vw,144px)]"
-    >
+    <section id="doctors" className="pt-[clamp(88px,10vw,144px)]">
       <div
         ref={sectionRef}
         className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"
@@ -43,14 +36,14 @@ export function DoctorsGrid({
         <div className="reveal mb-8 grid gap-4 lg:mb-10">
           <span className="inline-flex items-center gap-3 text-[0.8rem] uppercase tracking-[0.22em] text-[var(--muted)]">
             <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,color-mix(in_oklab,var(--accent)_80%,transparent))]" />
-            <span>{labels.doctorsEyebrow}</span>
+            <span>{SECTION_LABELS.eyebrow}</span>
           </span>
           <h2 className="max-w-[14ch] text-[clamp(2.1rem,4vw,4rem)] font-bold leading-[0.98] tracking-[-0.06em] text-[var(--text)]">
-            {title}
+            {title?.trim() || SECTION_LABELS.title}
           </h2>
-          {subtitle.trim() ? (
+          {(subtitle?.trim() || SECTION_LABELS.subtitle) ? (
             <p className="max-w-[64ch] text-base leading-8 text-[var(--muted)]">
-              {subtitle}
+              {subtitle?.trim() || SECTION_LABELS.subtitle}
             </p>
           ) : null}
         </div>
@@ -58,7 +51,6 @@ export function DoctorsGrid({
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {visibleDoctors.map((doctor, index) => {
             const photoSrc = normalizeDoctorPhotoSrc(doctor.photo_url);
-            const shouldShowPrefix = Boolean(labels.doctorPrefix);
 
             return (
               <article
@@ -96,11 +88,9 @@ export function DoctorsGrid({
                   </p>
                 ) : null}
 
-                {shouldShowPrefix ? (
-                  <div className="mt-auto pt-6 text-[0.82rem] uppercase tracking-[0.08em] text-[var(--muted-soft)]">
-                    {labels.doctorPrefix} / {String(index + 1).padStart(2, "0")}
-                  </div>
-                ) : null}
+                <div className="mt-auto pt-6 text-[0.82rem] uppercase tracking-[0.08em] text-[var(--muted-soft)]">
+                  {SECTION_LABELS.doctorPrefix} / {String(index + 1).padStart(2, "0")}
+                </div>
               </article>
             );
           })}

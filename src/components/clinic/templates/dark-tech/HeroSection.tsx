@@ -1,48 +1,10 @@
 "use client";
 
 import { MessageCircle, PhoneCall } from "lucide-react";
-import {
-  VARIANTS,
-  type ClinicVariant,
-  type ClinicVariantLabels,
-} from "@/lib/tenant/variants";
 import { useBooking } from "@/context/BookingContext";
-import { toTelHref } from "./utils";
-import { useClinicSectionEffects } from "./useClinicSectionEffects";
-
-interface HeroStats {
-  readonly reviews: number | null;
-  readonly reviewsSuffix?: string;
-  readonly rating: number | null;
-  readonly specialists?: number | null;
-  readonly instagram?: string | null;
-}
-
-interface HeroSectionProps {
-  readonly variant: ClinicVariant;
-  readonly name: string;
-  readonly heroTitle: string;
-  readonly heroSubtitle: string;
-  readonly phone: string;
-  readonly stats: HeroStats;
-  readonly labels: Pick<
-    ClinicVariantLabels,
-    | "heroEyebrow"
-    | "heroPrimaryCta"
-    | "heroSecondaryCta"
-    | "heroPanelKicker"
-    | "heroPanelTitle"
-    | "heroPhoneLabel"
-    | "heroFormatLabel"
-    | "heroFormatValue"
-    | "heroStartLabel"
-    | "heroStartValue"
-    | "heroReviewsLabel"
-    | "heroRatingLabel"
-    | "heroSpecialistsLabel"
-    | "heroInstagramLabel"
-  >;
-}
+import type { HeroSectionProps } from "@/components/clinic/template-props";
+import { toTelHref } from "@/components/clinic/utils";
+import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
 
 interface StatCard {
   readonly id: string;
@@ -54,29 +16,37 @@ interface StatCard {
   readonly delay: string;
 }
 
+const HERO_LABELS = {
+  eyebrow: "Clinic / precision care",
+  primaryCta: "Записаться на консультацию",
+  secondaryCta: "Позвонить",
+  panelKicker: "direct line",
+  panelTitle: "Контакт с клиникой без лишних шагов",
+  phoneLabel: "Телефон",
+  formatLabel: "Формат",
+  formatValue: "WhatsApp / звонок",
+  startLabel: "Старт",
+  startValue: "С бесплатной консультации",
+  reviewsLabel: "отзывов",
+  ratingLabel: "рейтинг",
+  specialistsLabel: "специалистов",
+  instagramLabel: "Instagram",
+} as const;
+
 export function HeroSection({
-  variant,
   name,
   heroTitle,
   heroSubtitle,
   phone,
   stats,
-  labels,
 }: HeroSectionProps) {
   const { openBooking } = useBooking();
   const sectionRef = useClinicSectionEffects<HTMLDivElement>();
-  const definition = VARIANTS[variant];
-  const headingClassName =
-    definition.headingStyle === "serif-italic"
-      ? "font-medium italic tracking-[-0.05em]"
-      : "font-bold tracking-[-0.065em]";
-  const buttonRadiusClassName =
-    definition.buttonShape === "pill" ? "rounded-full" : "rounded-[18px]";
 
   const statCards: StatCard[] = [
     {
       id: "reviews",
-      label: labels.heroReviewsLabel,
+      label: HERO_LABELS.reviewsLabel,
       valueText: stats.reviews !== null ? String(stats.reviews) : "0",
       target: stats.reviews ?? undefined,
       suffix: stats.reviewsSuffix ?? "",
@@ -84,7 +54,7 @@ export function HeroSection({
     },
     {
       id: "rating",
-      label: labels.heroRatingLabel,
+      label: HERO_LABELS.ratingLabel,
       valueText: stats.rating !== null ? stats.rating.toFixed(1) : "0.0",
       target: stats.rating ?? undefined,
       decimals: 1,
@@ -93,7 +63,7 @@ export function HeroSection({
     },
     {
       id: "specialists",
-      label: labels.heroSpecialistsLabel,
+      label: HERO_LABELS.specialistsLabel,
       valueText:
         typeof stats.specialists === "number" ? String(stats.specialists) : "0",
       target: stats.specialists ?? undefined,
@@ -101,18 +71,14 @@ export function HeroSection({
     },
     {
       id: "instagram",
-      label: labels.heroInstagramLabel,
-      valueText: stats.instagram?.trim() || labels.heroInstagramLabel,
+      label: HERO_LABELS.instagramLabel,
+      valueText: stats.instagram?.trim() || HERO_LABELS.instagramLabel,
       delay: "4",
     },
   ];
 
   return (
-    <section
-      id="clinic-hero"
-      data-variant={variant}
-      className="relative pt-10 sm:pt-12 lg:pt-14"
-    >
+    <section id="clinic-hero" className="relative pt-10 sm:pt-12 lg:pt-14">
       <div className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-[40px] border border-[var(--line)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--text)_4%,transparent),transparent_26%),linear-gradient(180deg,color-mix(in_oklab,var(--text)_2.5%,transparent),color-mix(in_oklab,var(--text)_1.5%,transparent)),var(--surface)] shadow-[var(--shadow-soft)]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_20%),radial-gradient(circle_at_18%_28%,color-mix(in_oklab,var(--text)_8%,transparent),transparent_16%)]" />
@@ -126,12 +92,12 @@ export function HeroSection({
               <div className="max-w-4xl">
                 <p className="reveal inline-flex flex-wrap items-center gap-3 text-[0.8rem] uppercase tracking-[0.22em] text-[var(--muted)]">
                   <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,color-mix(in_oklab,var(--accent)_80%,transparent))]" />
-                  <span>{labels.heroEyebrow}</span>
+                  <span>{HERO_LABELS.eyebrow}</span>
                   <span className="text-[var(--muted-soft)]">{name}</span>
                 </p>
 
                 <h1
-                  className={`reveal mt-5 max-w-[12ch] text-[clamp(3rem,7vw,6.7rem)] leading-[0.92] text-[var(--text)] ${headingClassName}`}
+                  className="reveal mt-5 max-w-[12ch] text-[clamp(3rem,7vw,6.7rem)] font-bold leading-[0.92] tracking-[-0.065em] text-[var(--text)]"
                   data-delay="1"
                 >
                   {heroTitle}
@@ -150,18 +116,18 @@ export function HeroSection({
                   <button
                     type="button"
                     onClick={() => openBooking()}
-                    className={`inline-flex min-h-13 items-center justify-center gap-2 border border-[color-mix(in_oklab,var(--accent)_42%,transparent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_24%,transparent),color-mix(in_oklab,var(--accent)_14%,transparent)),color-mix(in_oklab,var(--text)_3%,transparent)] px-6 text-sm font-semibold text-white shadow-[inset_0_1px_0_color-mix(in_oklab,var(--text)_10%,transparent),0_18px_38px_color-mix(in_oklab,var(--accent)_18%,transparent)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[var(--accent)] ${buttonRadiusClassName}`}
+                    className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--accent)_42%,transparent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_24%,transparent),color-mix(in_oklab,var(--accent)_14%,transparent)),color-mix(in_oklab,var(--text)_3%,transparent)] px-6 text-sm font-semibold text-white shadow-[inset_0_1px_0_color-mix(in_oklab,var(--text)_10%,transparent),0_18px_38px_color-mix(in_oklab,var(--accent)_18%,transparent)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[var(--accent)]"
                   >
                     <MessageCircle className="h-4 w-4" />
-                    <span>{labels.heroPrimaryCta}</span>
+                    <span>{HERO_LABELS.primaryCta}</span>
                   </button>
 
                   <a
                     href={toTelHref(phone)}
-                    className={`inline-flex min-h-13 items-center justify-center gap-2 border border-[var(--line)] bg-[color-mix(in_oklab,var(--surface)_88%,transparent)] px-6 text-sm font-semibold text-[var(--text)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--text)_18%,var(--line))] hover:bg-[color-mix(in_oklab,var(--surface-strong)_80%,transparent)] ${buttonRadiusClassName}`}
+                    className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-[color-mix(in_oklab,var(--surface)_88%,transparent)] px-6 text-sm font-semibold text-[var(--text)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--text)_18%,var(--line))] hover:bg-[color-mix(in_oklab,var(--surface-strong)_80%,transparent)]"
                   >
                     <PhoneCall className="h-4 w-4 text-[var(--accent)]" />
-                    <span>{labels.heroSecondaryCta}</span>
+                    <span>{HERO_LABELS.secondaryCta}</span>
                   </a>
                 </div>
               </div>
@@ -172,17 +138,17 @@ export function HeroSection({
 
                   <div className="pl-5">
                     <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[var(--muted-soft)]">
-                      {labels.heroPanelKicker}
+                      {HERO_LABELS.panelKicker}
                     </p>
                     <h2 className="mt-2 text-[1.45rem] font-semibold leading-tight text-[var(--text)]">
-                      {labels.heroPanelTitle}
+                      {HERO_LABELS.panelTitle}
                     </h2>
                   </div>
 
                   <div className="grid gap-3 pl-5">
                     <div className="flex items-center justify-between gap-4 rounded-[18px] border border-[color-mix(in_oklab,var(--line)_70%,transparent)] bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-4 py-3">
                       <span className="text-[0.78rem] uppercase tracking-[0.12em] text-[var(--muted-soft)]">
-                        {labels.heroPhoneLabel}
+                        {HERO_LABELS.phoneLabel}
                       </span>
                       <a
                         href={toTelHref(phone)}
@@ -194,19 +160,19 @@ export function HeroSection({
 
                     <div className="flex items-center justify-between gap-4 rounded-[18px] border border-[color-mix(in_oklab,var(--line)_70%,transparent)] bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-4 py-3">
                       <span className="text-[0.78rem] uppercase tracking-[0.12em] text-[var(--muted-soft)]">
-                        {labels.heroFormatLabel}
+                        {HERO_LABELS.formatLabel}
                       </span>
                       <span className="text-right text-sm text-[var(--text)]">
-                        {labels.heroFormatValue}
+                        {HERO_LABELS.formatValue}
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between gap-4 rounded-[18px] border border-[color-mix(in_oklab,var(--line)_70%,transparent)] bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-4 py-3">
                       <span className="text-[0.78rem] uppercase tracking-[0.12em] text-[var(--muted-soft)]">
-                        {labels.heroStartLabel}
+                        {HERO_LABELS.startLabel}
                       </span>
                       <span className="text-right text-sm text-[var(--text)]">
-                        {labels.heroStartValue}
+                        {HERO_LABELS.startValue}
                       </span>
                     </div>
                   </div>

@@ -122,7 +122,12 @@ export async function getSiteConfig(slug: string): Promise<SiteConfig | null> {
 
       const clinic = data.clinic;
       if (!clinic) return null;
-      const { theme, variantSetting } = await getClinicThemeData(slug);
+      const rpcTheme =
+        clinic.theme && typeof clinic.theme === "object"
+          ? (clinic.theme as PublicClinicTheme)
+          : null;
+      const { theme, variantSetting } =
+        rpcTheme?.variant || rpcTheme?.accent ? { theme: rpcTheme, variantSetting: null } : await getClinicThemeData(slug);
       const content =
         data.content && typeof data.content === "object" ? (data.content as PublicContent) : {};
       const clinicName = clinic.name || fallbackConfig.clinicName;

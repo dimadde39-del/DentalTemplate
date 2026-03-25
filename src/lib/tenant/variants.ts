@@ -47,6 +47,8 @@ export interface ClinicVariantDefinition {
   };
   readonly tokens: Record<`--${string}`, string>;
   readonly labels: ClinicVariantLabels;
+  readonly buttonShape: "rounded" | "pill";
+  readonly headingStyle: "serif-italic" | "sans";
 }
 
 export const DEFAULT_CLINIC_VARIANT: ClinicVariant = "dark-tech";
@@ -84,6 +86,8 @@ export const VARIANTS = {
       "--shadow-soft": "0 22px 64px rgba(0,0,0,0.34)",
       "--shadow-card": "0 16px 42px rgba(0,0,0,0.28)",
     },
+    buttonShape: "rounded",
+    headingStyle: "sans",
     labels: {
       heroEyebrow: "Clinic / precision care",
       heroPrimaryCta: "Записаться на консультацию",
@@ -120,25 +124,27 @@ export const VARIANTS = {
     colorScheme: "light",
     fonts: { heading: "Playfair Display", body: "Nunito" },
     tokens: {
-      "--bg": "#FAFAF8",
-      "--bg-soft": "#F4F1EC",
-      "--surface": "rgba(0,0,0,0.04)",
-      "--surface-strong": "rgba(255,255,255,0.84)",
-      "--line": "rgba(0,0,0,0.10)",
-      "--line-strong": "rgba(0,0,0,0.16)",
-      "--text": "#1a1a1a",
-      "--muted": "rgba(26,26,26,0.55)",
-      "--muted-soft": "rgba(26,26,26,0.42)",
-      "--ambient": "rgba(112,94,72,0.08)",
-      "--page-top": "#FFFDF9",
-      "--page-bottom": "#F0EBE2",
-      "--grid-line": "rgba(26,26,26,0.045)",
-      "--grid-opacity": "0.26",
-      "--noise-dot": "rgba(26,26,26,0.08)",
-      "--noise-opacity": "0.035",
-      "--shadow-soft": "0 22px 54px rgba(116,95,72,0.12)",
-      "--shadow-card": "0 14px 36px rgba(116,95,72,0.1)",
+      "--bg": "#F8FAFC",
+      "--bg-soft": "#EAF7FC",
+      "--surface": "#FFFFFF",
+      "--surface-strong": "#C8EEFA",
+      "--line": "rgba(0,161,214,0.15)",
+      "--line-strong": "rgba(0,161,214,0.28)",
+      "--text": "#0F2A35",
+      "--muted": "#5B7D8A",
+      "--muted-soft": "rgba(91,125,138,0.72)",
+      "--ambient": "rgba(0,161,214,0.08)",
+      "--page-top": "#FEFFFF",
+      "--page-bottom": "#E9F6FC",
+      "--grid-line": "rgba(0,161,214,0.06)",
+      "--grid-opacity": "0.22",
+      "--noise-dot": "rgba(15,42,53,0.05)",
+      "--noise-opacity": "0.03",
+      "--shadow-soft": "0 22px 54px rgba(16,74,94,0.08)",
+      "--shadow-card": "0 14px 36px rgba(16,74,94,0.08)",
     },
+    buttonShape: "pill",
+    headingStyle: "serif-italic",
     labels: {
       heroEyebrow: "Добро пожаловать",
       heroPrimaryCta: "Записаться",
@@ -194,6 +200,8 @@ export const VARIANTS = {
       "--shadow-soft": "0 22px 58px rgba(17,17,16,0.1)",
       "--shadow-card": "0 14px 36px rgba(17,17,16,0.08)",
     },
+    buttonShape: "rounded",
+    headingStyle: "serif-italic",
     labels: {
       heroEyebrow: "Private medical office",
       heroPrimaryCta: "Записаться на приём",

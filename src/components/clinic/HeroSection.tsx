@@ -1,7 +1,11 @@
 "use client";
 
 import { MessageCircle, PhoneCall } from "lucide-react";
-import type { ClinicVariantLabels } from "@/lib/tenant/variants";
+import {
+  VARIANTS,
+  type ClinicVariant,
+  type ClinicVariantLabels,
+} from "@/lib/tenant/variants";
 import { useBooking } from "@/context/BookingContext";
 import { toTelHref } from "./utils";
 import { useClinicSectionEffects } from "./useClinicSectionEffects";
@@ -15,6 +19,7 @@ interface HeroStats {
 }
 
 interface HeroSectionProps {
+  readonly variant: ClinicVariant;
   readonly name: string;
   readonly heroTitle: string;
   readonly heroSubtitle: string;
@@ -50,6 +55,7 @@ interface StatCard {
 }
 
 export function HeroSection({
+  variant,
   name,
   heroTitle,
   heroSubtitle,
@@ -59,6 +65,13 @@ export function HeroSection({
 }: HeroSectionProps) {
   const { openBooking } = useBooking();
   const sectionRef = useClinicSectionEffects<HTMLDivElement>();
+  const definition = VARIANTS[variant];
+  const headingClassName =
+    definition.headingStyle === "serif-italic"
+      ? "font-medium italic tracking-[-0.05em]"
+      : "font-bold tracking-[-0.065em]";
+  const buttonRadiusClassName =
+    definition.buttonShape === "pill" ? "rounded-full" : "rounded-[18px]";
 
   const statCards: StatCard[] = [
     {
@@ -95,7 +108,11 @@ export function HeroSection({
   ];
 
   return (
-    <section id="clinic-hero" className="relative pt-10 sm:pt-12 lg:pt-14">
+    <section
+      id="clinic-hero"
+      data-variant={variant}
+      className="relative pt-10 sm:pt-12 lg:pt-14"
+    >
       <div className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-[40px] border border-[var(--line)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--text)_4%,transparent),transparent_26%),linear-gradient(180deg,color-mix(in_oklab,var(--text)_2.5%,transparent),color-mix(in_oklab,var(--text)_1.5%,transparent)),var(--surface)] shadow-[var(--shadow-soft)]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_22%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_20%),radial-gradient(circle_at_18%_28%,color-mix(in_oklab,var(--text)_8%,transparent),transparent_16%)]" />
@@ -114,7 +131,7 @@ export function HeroSection({
                 </p>
 
                 <h1
-                  className="reveal mt-5 max-w-[12ch] text-[clamp(3rem,7vw,6.7rem)] font-bold leading-[0.92] tracking-[-0.065em] text-[var(--text)]"
+                  className={`reveal mt-5 max-w-[12ch] text-[clamp(3rem,7vw,6.7rem)] leading-[0.92] text-[var(--text)] ${headingClassName}`}
                   data-delay="1"
                 >
                   {heroTitle}
@@ -133,7 +150,7 @@ export function HeroSection({
                   <button
                     type="button"
                     onClick={() => openBooking()}
-                    className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--accent)_42%,transparent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_24%,transparent),color-mix(in_oklab,var(--accent)_14%,transparent)),color-mix(in_oklab,var(--text)_3%,transparent)] px-6 text-sm font-semibold text-white shadow-[inset_0_1px_0_color-mix(in_oklab,var(--text)_10%,transparent),0_18px_38px_color-mix(in_oklab,var(--accent)_18%,transparent)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[var(--accent)]"
+                    className={`inline-flex min-h-13 items-center justify-center gap-2 border border-[color-mix(in_oklab,var(--accent)_42%,transparent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_24%,transparent),color-mix(in_oklab,var(--accent)_14%,transparent)),color-mix(in_oklab,var(--text)_3%,transparent)] px-6 text-sm font-semibold text-white shadow-[inset_0_1px_0_color-mix(in_oklab,var(--text)_10%,transparent),0_18px_38px_color-mix(in_oklab,var(--accent)_18%,transparent)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[var(--accent)] ${buttonRadiusClassName}`}
                   >
                     <MessageCircle className="h-4 w-4" />
                     <span>{labels.heroPrimaryCta}</span>
@@ -141,7 +158,7 @@ export function HeroSection({
 
                   <a
                     href={toTelHref(phone)}
-                    className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-[color-mix(in_oklab,var(--surface)_88%,transparent)] px-6 text-sm font-semibold text-[var(--text)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--text)_18%,var(--line))] hover:bg-[color-mix(in_oklab,var(--surface-strong)_80%,transparent)]"
+                    className={`inline-flex min-h-13 items-center justify-center gap-2 border border-[var(--line)] bg-[color-mix(in_oklab,var(--surface)_88%,transparent)] px-6 text-sm font-semibold text-[var(--text)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[color-mix(in_oklab,var(--text)_18%,var(--line))] hover:bg-[color-mix(in_oklab,var(--surface-strong)_80%,transparent)] ${buttonRadiusClassName}`}
                   >
                     <PhoneCall className="h-4 w-4 text-[var(--accent)]" />
                     <span>{labels.heroSecondaryCta}</span>

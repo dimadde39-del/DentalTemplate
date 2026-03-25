@@ -91,6 +91,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <HeroSection
+        variant={variant}
         name={config.clinicName}
         heroTitle={config.heroTitle}
         heroSubtitle={config.heroSubtitle}
@@ -105,12 +106,14 @@ export default async function Home() {
         }}
       />
       <ServicesGrid
+        variant={variant}
         services={config.services}
         title={config.servicesTitle}
         subtitle={config.servicesSubtitle}
         labels={labels}
       />
       <DoctorsGrid
+        variant={variant}
         doctors={config.doctors}
         title={config.doctorsTitle}
         subtitle={config.doctorsSubtitle}
@@ -118,12 +121,14 @@ export default async function Home() {
       />
       <BookingForm config={config} slug={slug} />
       <ReviewsGrid
+        variant={variant}
         reviews={config.reviews}
         testimonialsTitle={config.testimonialsTitle}
         testimonialsSubtitle={config.testimonialsSubtitle}
         labels={labels}
       />
       <ContactCTA
+        variant={variant}
         phone={config.contactPhone}
         email={config.contactEmail}
         instagramUrl={config.instagramUrl ?? null}

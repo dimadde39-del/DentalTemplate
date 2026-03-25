@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { ClinicVariantLabels } from "@/lib/tenant/variants";
+import type { ClinicVariant, ClinicVariantLabels } from "@/lib/tenant/variants";
 import { ClinicDoctor } from "@/config/site";
 import {
   getDoctorInitials,
@@ -11,6 +11,7 @@ import {
 import { useClinicSectionEffects } from "./useClinicSectionEffects";
 
 export interface DoctorsGridProps {
+  readonly variant: ClinicVariant;
   readonly doctors: readonly ClinicDoctor[];
   readonly title: string;
   readonly subtitle: string;
@@ -18,6 +19,7 @@ export interface DoctorsGridProps {
 }
 
 export function DoctorsGrid({
+  variant,
   doctors,
   title,
   subtitle,
@@ -29,7 +31,11 @@ export function DoctorsGrid({
   if (visibleDoctors.length === 0) return null;
 
   return (
-    <section id="doctors" className="pt-[clamp(88px,10vw,144px)]">
+    <section
+      id="doctors"
+      data-variant={variant}
+      className="pt-[clamp(88px,10vw,144px)]"
+    >
       <div
         ref={sectionRef}
         className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"

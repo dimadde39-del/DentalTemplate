@@ -1,13 +1,18 @@
-import { FONT_VARIABLES, type ClinicVariant, VARIANTS } from "./variants";
+import {
+  DEFAULT_CLINIC_VARIANT,
+  FONT_VARIABLES,
+  type ClinicVariant,
+  VARIANTS,
+} from "./variants";
 
 interface TenantThemeProviderProps {
-  readonly variant: ClinicVariant;
+  readonly variant?: ClinicVariant;
   readonly accent?: string | null;
   readonly children: React.ReactNode;
 }
 
 export function TenantThemeProvider({
-  variant,
+  variant = DEFAULT_CLINIC_VARIANT,
   accent,
   children,
 }: TenantThemeProviderProps) {

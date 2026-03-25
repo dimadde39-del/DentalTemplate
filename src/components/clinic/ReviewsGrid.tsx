@@ -1,11 +1,12 @@
 "use client";
 
-import type { ClinicVariantLabels } from "@/lib/tenant/variants";
+import type { ClinicVariant, ClinicVariantLabels } from "@/lib/tenant/variants";
 import { ClinicReview } from "@/config/site";
 import { getVisibleReviews } from "./utils";
 import { useClinicSectionEffects } from "./useClinicSectionEffects";
 
 export interface ReviewsGridProps {
+  readonly variant: ClinicVariant;
   readonly reviews: readonly ClinicReview[];
   readonly testimonialsTitle: string;
   readonly testimonialsSubtitle: string;
@@ -21,6 +22,7 @@ function formatRating(value: number): string {
 }
 
 export function ReviewsGrid({
+  variant,
   reviews,
   testimonialsTitle,
   testimonialsSubtitle,
@@ -32,7 +34,11 @@ export function ReviewsGrid({
   if (visibleReviews.length === 0) return null;
 
   return (
-    <section id="reviews" className="pt-[clamp(88px,10vw,144px)]">
+    <section
+      id="reviews"
+      data-variant={variant}
+      className="pt-[clamp(88px,10vw,144px)]"
+    >
       <div
         ref={sectionRef}
         className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"

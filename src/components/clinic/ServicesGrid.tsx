@@ -2,7 +2,7 @@
 
 import { ArrowUpRight, Plus } from "lucide-react";
 import { useState } from "react";
-import type { ClinicVariantLabels } from "@/lib/tenant/variants";
+import type { ClinicVariant, ClinicVariantLabels } from "@/lib/tenant/variants";
 import { ClinicService } from "@/config/site";
 import { useBooking } from "@/context/BookingContext";
 import {
@@ -14,6 +14,7 @@ import {
 import { useClinicSectionEffects } from "./useClinicSectionEffects";
 
 interface ServicesGridProps {
+  readonly variant: ClinicVariant;
   readonly services: readonly ClinicService[];
   readonly title: string;
   readonly subtitle: string;
@@ -34,6 +35,7 @@ function getServiceIndex(index: number): string {
 }
 
 export function ServicesGrid({
+  variant,
   services,
   title,
   subtitle,
@@ -55,7 +57,11 @@ export function ServicesGrid({
   if (visibleServices.length === 0) return null;
 
   return (
-    <section id="services" className="pt-[clamp(88px,10vw,144px)]">
+    <section
+      id="services"
+      data-variant={variant}
+      className="pt-[clamp(88px,10vw,144px)]"
+    >
       <div
         ref={sectionRef}
         className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"

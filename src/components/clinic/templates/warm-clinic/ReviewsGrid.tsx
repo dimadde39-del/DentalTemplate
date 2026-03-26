@@ -40,17 +40,17 @@ export function ReviewsGrid({
         className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"
       >
         <div className="reveal mb-8 grid gap-4 lg:mb-10">
-          <span className="inline-flex items-center gap-3 text-[0.8rem] uppercase tracking-[0.2em] text-[#5B7D8A]">
+          <span className="inline-flex items-center gap-3 text-[0.8rem] uppercase tracking-[0.2em] text-[var(--muted)]">
             <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,var(--accent))]" />
             <span>{SECTION_LABELS.eyebrow}</span>
           </span>
           <h2
-            className={`max-w-[14ch] text-[clamp(2.2rem,4vw,4rem)] leading-[1] tracking-[-0.04em] text-[#0F2A35] italic ${warmClinicHeadingFont.className}`}
+            className={`max-w-[14ch] text-[clamp(2.2rem,4vw,4rem)] leading-[1] tracking-[-0.04em] text-[var(--text)] italic ${warmClinicHeadingFont.className}`}
           >
             {testimonialsTitle}
           </h2>
           {testimonialsSubtitle.trim() ? (
-            <p className="max-w-[64ch] text-base leading-8 text-[#5B7D8A]">
+            <p className="max-w-[64ch] text-base leading-8 text-[var(--muted)]">
               {testimonialsSubtitle}
             </p>
           ) : null}
@@ -60,21 +60,21 @@ export function ReviewsGrid({
           {visibleReviews.map((review, index) => (
             <article
               key={review.id}
-              className="reveal grid min-h-[236px] gap-5 rounded-[26px] border border-[rgba(0,161,214,0.15)] bg-white p-6 shadow-[0_18px_42px_rgba(15,42,53,0.06)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[var(--accent)]"
+              className="reveal grid min-h-[236px] gap-5 rounded-[26px] border border-[var(--line)] bg-white p-6 shadow-[0_18px_42px_rgba(15,42,53,0.06)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[var(--accent)]"
               data-delay={String((index % 2) + 1)}
             >
               <div className="flex items-center justify-between gap-4">
                 <h3
-                  className={`text-[1.14rem] leading-[1.15] text-[#0F2A35] italic ${warmClinicHeadingFont.className}`}
+                  className={`text-[1.14rem] leading-[1.15] text-[var(--text)] italic ${warmClinicHeadingFont.className}`}
                 >
                   {review.author}
                 </h3>
-                <div className="inline-flex min-h-9 items-center rounded-full border border-[rgba(0,161,214,0.12)] bg-[#F4FCFF] px-3 text-[0.92rem] text-[#0F2A35]">
+                <div className="inline-flex min-h-9 items-center rounded-full border border-[var(--line)] bg-[var(--accent-pale)] px-3 text-[0.92rem] text-[var(--text)]">
                   {formatRating(review.rating)}
                 </div>
               </div>
 
-              <p className="text-[1.04rem] leading-8 text-[#5B7D8A] italic">
+              <p className="text-[1.04rem] leading-8 text-[var(--muted)] italic">
                 &ldquo;{review.comment}&rdquo;
               </p>
 

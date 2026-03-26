@@ -17,6 +17,7 @@ export function TenantThemeProvider({
   children,
 }: TenantThemeProviderProps) {
   const definition = VARIANTS[variant];
+  const isPremiumMed = variant === "premium-med";
 
   const cssVariables = {
     ...definition.tokens,
@@ -33,15 +34,18 @@ export function TenantThemeProvider({
   } as React.CSSProperties;
 
   const backgroundStyle = {
-    backgroundImage:
-      "radial-gradient(circle at 15% 15%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 22%), radial-gradient(circle at 82% 18%, var(--ambient), transparent 18%), linear-gradient(180deg, var(--page-top) 0%, var(--bg) 36%, var(--page-bottom) 100%)",
+    backgroundImage: isPremiumMed
+      ? "linear-gradient(180deg, var(--page-top) 0%, var(--bg) 48%, var(--page-bottom) 100%)"
+      : "radial-gradient(circle at 15% 15%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 22%), radial-gradient(circle at 82% 18%, var(--ambient), transparent 18%), linear-gradient(180deg, var(--page-top) 0%, var(--bg) 36%, var(--page-bottom) 100%)",
   } as React.CSSProperties;
 
   const gridStyle = {
     backgroundImage:
       "linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)",
     backgroundSize: "80px 80px",
-    maskImage: "radial-gradient(circle at center, black 42%, transparent 95%)",
+    maskImage: isPremiumMed
+      ? "linear-gradient(180deg, transparent 0%, black 18%, black 82%, transparent 100%)"
+      : "radial-gradient(circle at center, black 42%, transparent 95%)",
     opacity: "var(--grid-opacity)",
   } as React.CSSProperties;
 
@@ -61,7 +65,7 @@ export function TenantThemeProvider({
       <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={gridStyle} />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 mix-blend-soft-light"
+        className={`pointer-events-none absolute inset-0 ${isPremiumMed ? "" : "mix-blend-soft-light"}`}
         style={noiseStyle}
       />
       <div className="relative z-10 min-h-screen">{children}</div>

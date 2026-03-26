@@ -14,16 +14,16 @@ import { premiumHeading } from "./fonts";
 
 const SECTION_LABELS = {
   eyebrow: "Услуги клиники",
-  title: "Полный спектр современной стоматологии",
+  title: "Полный спектр клинической стоматологии",
   subtitle:
-    "Диагностика, терапия, ортодонтия, хирургия и имплантация в одном медицинском контуре.",
+    "От первичной диагностики и терапии до ортодонтии, хирургии и имплантации в одном сдержанном медицинском контуре.",
   featuredBadge: "Первичный прием",
   priceLabel: "стоимость",
   moreLabel: "подробнее",
-  bracesBadge: "Брекет-системы",
-  bracesTitle: "Варианты брекет-систем в одном раскрывающемся блоке",
+  bracesBadge: "Ортодонтия",
+  bracesTitle: "Брекет-системы собраны в одном деликатном раскрывающемся блоке",
   bracesDescription:
-    "Собираем ортодонтические решения в одной карточке, чтобы цены и различия было легко сравнить без перегрузки страницы.",
+    "Так легче сравнить варианты и обсудить лечение без перегруженной сетки и визуального шума.",
 } as const;
 
 function renderPrice(price: string | null | undefined): string {
@@ -51,56 +51,61 @@ export function ServicesGrid({
   if (visibleServices.length === 0) return null;
 
   return (
-    <section id="services" className="pt-[clamp(88px,10vw,144px)]">
+    <section id="services" className="pt-[clamp(92px,10vw,148px)]">
       <div
         ref={sectionRef}
-        className="mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8"
+        className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8"
       >
-        <div className="reveal mb-8 grid gap-4 lg:mb-10">
-          <span className="inline-flex items-center gap-3 text-[0.78rem] uppercase tracking-[0.2em] text-[var(--muted)]">
-            <span className="h-px w-10 bg-[var(--accent)]" />
-            <span>{SECTION_LABELS.eyebrow}</span>
-          </span>
-          <h2
-            className={`max-w-[14ch] text-[clamp(2.2rem,4vw,4.2rem)] leading-[0.98] tracking-[-0.045em] text-[var(--text)] ${premiumHeading.className}`}
-          >
-            {title?.trim() || SECTION_LABELS.title}
-          </h2>
-          <p className="max-w-[64ch] text-base leading-8 text-[var(--muted)]">
+        <div className="mb-10 grid gap-5 border-b border-[var(--line)] pb-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,0.7fr)] lg:items-end">
+          <div className="reveal">
+            <span className="inline-flex items-center gap-3 text-[0.76rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+              <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,var(--accent))]" />
+              <span>{SECTION_LABELS.eyebrow}</span>
+            </span>
+            <h2
+              className={`mt-4 max-w-[14ch] text-[clamp(2.45rem,4.4vw,4.9rem)] leading-[0.92] tracking-[-0.05em] text-[var(--text)] italic ${premiumHeading.className}`}
+            >
+              {title?.trim() || SECTION_LABELS.title}
+            </h2>
+          </div>
+
+          <p className="reveal max-w-[56ch] text-[1rem] leading-8 text-[var(--muted)] lg:justify-self-end lg:text-[1.05rem]">
             {subtitle?.trim() || SECTION_LABELS.subtitle}
           </p>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-5">
           {featuredService ? (
             <button
               type="button"
               onClick={() => openBooking(featuredService.name)}
-              className="reveal group overflow-hidden rounded-[20px] border border-[var(--line)] bg-white p-7 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_35%,var(--line))] sm:p-8"
+              className="reveal group overflow-hidden rounded-[28px] border border-[var(--line)] bg-white p-7 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_22%,var(--line))] hover:shadow-[0_26px_36px_rgba(26,26,25,0.07)] sm:p-8 lg:p-10"
             >
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-                <div>
-                  <span className="inline-flex min-h-9 items-center rounded-md border border-[color-mix(in_oklab,var(--accent)_24%,var(--line))] bg-[color-mix(in_oklab,var(--accent)_8%,white)] px-3 text-[0.76rem] uppercase tracking-[0.16em] text-[var(--muted)]">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                <div className="max-w-3xl">
+                  <span className="inline-flex min-h-9 items-center rounded-[999px] border border-[color-mix(in_oklab,var(--accent)_18%,var(--line))] bg-[color-mix(in_oklab,var(--accent)_6%,white)] px-3 text-[0.72rem] uppercase tracking-[0.18em] text-[var(--muted)]">
                     {SECTION_LABELS.featuredBadge}
                   </span>
+
                   <h3
-                    className={`mt-4 max-w-[12ch] text-[clamp(2rem,3.8vw,3.2rem)] leading-[1] tracking-[-0.04em] text-[var(--text)] ${premiumHeading.className}`}
+                    className={`mt-5 max-w-[12ch] text-[clamp(2.35rem,4.1vw,4rem)] leading-[0.94] tracking-[-0.045em] text-[var(--text)] italic ${premiumHeading.className}`}
                   >
                     {featuredService.name}
                   </h3>
+
                   {featuredService.description?.trim() ? (
-                    <p className="mt-4 max-w-[58ch] text-base leading-8 text-[var(--muted)]">
+                    <p className="mt-5 max-w-[58ch] text-[1rem] leading-8 text-[var(--muted)]">
                       {featuredService.description}
                     </p>
                   ) : null}
                 </div>
 
-                <div className="inline-flex items-baseline gap-3 rounded-[14px] border border-[var(--line)] bg-[#FCFCFA] px-4 py-4">
-                  <span className="text-[0.78rem] uppercase tracking-[0.16em] text-[var(--muted)]">
+                <div className="grid gap-3 rounded-[22px] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(243,242,238,0.72))] px-5 py-5">
+                  <span className="text-[0.72rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                     {SECTION_LABELS.priceLabel}
                   </span>
                   <strong
-                    className={`text-[1.9rem] leading-none tracking-[-0.05em] text-[var(--accent)] ${premiumHeading.className}`}
+                    className={`text-[2rem] leading-none tracking-[-0.05em] text-[var(--accent)] ${premiumHeading.className}`}
                   >
                     {renderPrice(featuredService.price)}
                   </strong>
@@ -110,42 +115,45 @@ export function ServicesGrid({
           ) : null}
 
           {regularServices.length > 0 ? (
-            <div className="grid gap-4 xl:grid-cols-3">
+            <div className="grid gap-5 xl:grid-cols-2">
               {regularServices.map((service, index) => (
                 <button
                   key={service.id}
                   type="button"
                   onClick={() => openBooking(service.name)}
-                  className="group reveal grid min-h-[218px] gap-4 rounded-[18px] border border-[var(--line)] bg-white p-6 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_35%,var(--line))]"
-                  data-delay={String((index % 3) + 1)}
+                  className="group reveal grid min-h-[220px] gap-6 rounded-[24px] border border-[var(--line)] bg-white p-6 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_22%,var(--line))] hover:shadow-[0_24px_34px_rgba(26,26,25,0.06)] sm:p-7"
+                  data-delay={String((index % 2) + 1)}
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-5">
                     <h3
-                      className={`max-w-[13ch] text-[1.34rem] leading-[1.14] text-[var(--text)] ${premiumHeading.className}`}
+                      className={`max-w-[14ch] text-[1.52rem] leading-[1.04] text-[var(--text)] italic ${premiumHeading.className}`}
                     >
                       {service.name}
                     </h3>
+
                     <div className="shrink-0 text-right">
-                      <span className="block text-[0.72rem] uppercase tracking-[0.14em] text-[var(--muted)]">
+                      <span className="block text-[0.7rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                         {SECTION_LABELS.priceLabel}
                       </span>
-                      <span className={`mt-2 block text-[1.2rem] font-medium leading-none text-[var(--accent)] ${premiumHeading.className}`}>
+                      <span
+                        className={`mt-2 block text-[1.24rem] leading-none text-[var(--accent)] ${premiumHeading.className}`}
+                      >
                         {renderPrice(service.price)}
                       </span>
                     </div>
                   </div>
 
                   {service.description?.trim() ? (
-                    <p className="text-sm leading-7 text-[var(--muted)]">
+                    <p className="max-w-[54ch] text-sm leading-7 text-[var(--muted)] sm:text-[0.98rem]">
                       {service.description}
                     </p>
                   ) : (
                     <span />
                   )}
 
-                  <div className="mt-auto flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4 text-[0.78rem] uppercase tracking-[0.08em] text-[var(--muted)]">
+                  <div className="mt-auto flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4 text-[0.76rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                     <span>{SECTION_LABELS.moreLabel}</span>
-                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-[var(--line)] text-[var(--text)] transition-colors group-hover:border-[var(--accent)] group-hover:text-[var(--accent)]">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] border border-[var(--line)] text-[var(--text)] transition-all duration-300 ease-[var(--ease)] group-hover:border-[var(--accent)] group-hover:text-[var(--accent)]">
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
                   </div>
@@ -156,8 +164,10 @@ export function ServicesGrid({
 
           {bracesServices.length > 0 ? (
             <article
-              className={`reveal overflow-hidden rounded-[20px] border bg-white shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] ${
-                isBracesOpen ? "border-[color-mix(in_oklab,var(--accent)_35%,var(--line))]" : "border-[var(--line)]"
+              className={`reveal overflow-hidden rounded-[28px] border bg-white shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] ${
+                isBracesOpen
+                  ? "border-[color-mix(in_oklab,var(--accent)_24%,var(--line))]"
+                  : "border-[var(--line)]"
               }`}
             >
               <button
@@ -165,37 +175,42 @@ export function ServicesGrid({
                 aria-expanded={isBracesOpen}
                 aria-controls="braces-panel-premium-med"
                 onClick={() => setIsBracesOpen((open) => !open)}
-                className="w-full px-6 py-6 text-left sm:px-7"
+                className="w-full px-6 py-6 text-left sm:px-7 sm:py-7"
               >
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                   <div className="grid gap-4">
-                    <span className="inline-flex min-h-9 w-fit items-center gap-2 rounded-md border border-[color-mix(in_oklab,var(--accent)_24%,var(--line))] bg-[color-mix(in_oklab,var(--accent)_8%,white)] px-3 text-[0.78rem] uppercase tracking-[0.14em] text-[var(--muted)]">
+                    <span className="inline-flex min-h-9 w-fit items-center gap-2 rounded-[999px] border border-[color-mix(in_oklab,var(--accent)_18%,var(--line))] bg-[color-mix(in_oklab,var(--accent)_6%,white)] px-3 text-[0.72rem] uppercase tracking-[0.18em] text-[var(--muted)]">
                       <Plus className="h-4 w-4 text-[var(--accent)]" />
                       <span>{SECTION_LABELS.bracesBadge}</span>
                     </span>
 
                     <div>
                       <h3
-                        className={`text-[clamp(1.45rem,2vw,2rem)] leading-tight text-[var(--text)] ${premiumHeading.className}`}
+                        className={`max-w-[18ch] text-[clamp(1.6rem,2.4vw,2.3rem)] leading-[1.02] text-[var(--text)] italic ${premiumHeading.className}`}
                       >
                         {SECTION_LABELS.bracesTitle}
                       </h3>
-                      <p className="mt-3 max-w-[68ch] text-sm leading-7 text-[var(--muted)] sm:text-base">
+                      <p className="mt-3 max-w-[64ch] text-sm leading-7 text-[var(--muted)] sm:text-[0.98rem]">
                         {SECTION_LABELS.bracesDescription}
                       </p>
                     </div>
                   </div>
 
-                  <span
-                    className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border text-[var(--text)] transition-all duration-300 ease-[var(--ease)] ${
-                      isBracesOpen
-                        ? "rotate-45 border-[var(--accent)] text-[var(--accent)]"
-                        : "border-[var(--line)]"
-                    }`}
-                    aria-hidden="true"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </span>
+                  <div className="flex items-center gap-4 lg:pt-1">
+                    <span className="text-[0.74rem] uppercase tracking-[0.18em] text-[var(--muted)]">
+                      {bracesServices.length} варианта
+                    </span>
+                    <span
+                      className={`inline-flex h-10 w-10 items-center justify-center rounded-[10px] border text-[var(--text)] transition-all duration-300 ease-[var(--ease)] ${
+                        isBracesOpen
+                          ? "rotate-45 border-[var(--accent)] text-[var(--accent)]"
+                          : "border-[var(--line)]"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </span>
+                  </div>
                 </div>
               </button>
 
@@ -206,23 +221,26 @@ export function ServicesGrid({
                   isBracesOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                 }`}
               >
-                <div className="min-h-0 overflow-hidden">
-                  <ul className="grid gap-3 px-6 pb-6 sm:grid-cols-2 sm:px-7 sm:pb-7">
+                <div className="min-h-0 overflow-hidden border-t border-[var(--line)]">
+                  <ul className="grid gap-4 px-6 py-6 sm:grid-cols-2 sm:px-7 sm:py-7 xl:grid-cols-3">
                     {bracesServices.map((service) => (
                       <li
                         key={service.id}
-                        className="rounded-[14px] border border-[var(--line)] bg-[#FCFCFA] px-4 py-4"
+                        className="grid gap-3 rounded-[18px] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(243,242,238,0.72))] px-4 py-4"
                       >
                         <div className="flex items-start justify-between gap-4">
-                          <p className="max-w-[20ch] text-sm font-medium text-[var(--text)] sm:text-base">
+                          <p className="max-w-[18ch] text-sm leading-6 text-[var(--text)] sm:text-[0.98rem]">
                             {service.name}
                           </p>
-                          <span className={`shrink-0 text-[1.02rem] font-medium text-[var(--accent)] ${premiumHeading.className}`}>
+                          <span
+                            className={`shrink-0 text-[1.05rem] leading-none text-[var(--accent)] ${premiumHeading.className}`}
+                          >
                             {renderPrice(service.price)}
                           </span>
                         </div>
+
                         {service.description?.trim() ? (
-                          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                          <p className="text-sm leading-6 text-[var(--muted)]">
                             {service.description}
                           </p>
                         ) : null}

@@ -5,6 +5,7 @@ export type VariantFontName =
   | "Onest"
   | "Playfair Display"
   | "Nunito"
+  | "Cormorant Garamond"
   | "DM Serif Display"
   | "DM Sans";
 
@@ -58,6 +59,7 @@ export const FONT_VARIABLES: Record<VariantFontName, string> = {
   Onest: "var(--font-onest)",
   "Playfair Display": "var(--font-playfair-display)",
   Nunito: "var(--font-nunito)",
+  "Cormorant Garamond": "var(--font-cormorant-garamond)",
   "DM Serif Display": "var(--font-dm-serif-display)",
   "DM Sans": "var(--font-dm-sans)",
 };
@@ -179,26 +181,26 @@ export const VARIANTS = {
   },
   "premium-med": {
     colorScheme: "light",
-    fonts: { heading: "DM Serif Display", body: "DM Sans" },
+    fonts: { heading: "Cormorant Garamond", body: "DM Sans" },
     tokens: {
-      "--bg": "#F7F7F5",
-      "--bg-soft": "#F0F0EC",
+      "--bg": "#FAFAF8",
+      "--bg-soft": "#F3F2EE",
       "--surface": "#FFFFFF",
       "--surface-strong": "#FFFFFF",
-      "--line": "rgba(0,0,0,0.08)",
-      "--line-strong": "rgba(0,0,0,0.14)",
-      "--text": "#111110",
-      "--muted": "#6B6B6B",
-      "--muted-soft": "rgba(107,107,107,0.72)",
-      "--ambient": "rgba(30,58,138,0.05)",
-      "--page-top": "#FAFAF8",
-      "--page-bottom": "#F1F1ED",
-      "--grid-line": "rgba(17,17,16,0.025)",
-      "--grid-opacity": "0.08",
-      "--noise-dot": "rgba(17,17,16,0.04)",
-      "--noise-opacity": "0.012",
-      "--shadow-soft": "0 18px 44px rgba(17,17,16,0.08)",
-      "--shadow-card": "0 12px 26px rgba(17,17,16,0.06)",
+      "--line": "rgba(30,58,138,0.08)",
+      "--line-strong": "rgba(30,58,138,0.16)",
+      "--text": "#1A1A19",
+      "--muted": "#7A7A72",
+      "--muted-soft": "rgba(122,122,114,0.6)",
+      "--ambient": "rgba(30,58,138,0.04)",
+      "--page-top": "#FDFCFA",
+      "--page-bottom": "#F5F4F0",
+      "--grid-line": "rgba(30,58,138,0.02)",
+      "--grid-opacity": "0.04",
+      "--noise-dot": "rgba(30,58,138,0.02)",
+      "--noise-opacity": "0.008",
+      "--shadow-soft": "0 24px 48px rgba(26,26,25,0.06)",
+      "--shadow-card": "0 14px 32px rgba(26,26,25,0.05)",
     },
     buttonShape: "rounded",
     headingStyle: "serif-italic",

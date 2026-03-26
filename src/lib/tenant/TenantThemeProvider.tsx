@@ -35,14 +35,14 @@ export function TenantThemeProvider({
 
   const backgroundStyle = {
     backgroundImage: isPremiumMed
-      ? "linear-gradient(180deg, var(--page-top) 0%, var(--bg) 48%, var(--page-bottom) 100%)"
+      ? "radial-gradient(circle at 82% 10%, var(--ambient), transparent 20%), linear-gradient(180deg, var(--page-top) 0%, var(--bg) 44%, var(--page-bottom) 100%)"
       : "radial-gradient(circle at 15% 15%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 22%), radial-gradient(circle at 82% 18%, var(--ambient), transparent 18%), linear-gradient(180deg, var(--page-top) 0%, var(--bg) 36%, var(--page-bottom) 100%)",
   } as React.CSSProperties;
 
   const gridStyle = {
     backgroundImage:
       "linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)",
-    backgroundSize: "80px 80px",
+    backgroundSize: isPremiumMed ? "96px 96px" : "80px 80px",
     maskImage: isPremiumMed
       ? "linear-gradient(180deg, transparent 0%, black 18%, black 82%, transparent 100%)"
       : "radial-gradient(circle at center, black 42%, transparent 95%)",

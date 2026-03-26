@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {
+  Cormorant_Garamond,
   DM_Sans,
   DM_Serif_Display,
   Geist_Mono,
@@ -31,6 +32,14 @@ const playfairDisplay = Playfair_Display({
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin", "cyrillic"],
+  display: "swap",
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant-garamond",
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -66,7 +75,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${onest.variable} ${jura.variable} ${playfairDisplay.variable} ${nunito.variable} ${dmSerifDisplay.variable} ${dmSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
+        className={`${onest.variable} ${jura.variable} ${playfairDisplay.variable} ${nunito.variable} ${cormorantGaramond.variable} ${dmSerifDisplay.variable} ${dmSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
       >
         {children}
       </body>

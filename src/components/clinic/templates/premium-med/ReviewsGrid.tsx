@@ -1,13 +1,9 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import type { ReviewsGridProps } from "@/components/clinic/template-props";
 import { getVisibleReviews } from "@/components/clinic/utils";
 import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
-
-const headingStyle: CSSProperties = {
-  fontFamily: "var(--font-heading), Georgia, serif",
-};
+import { premiumHeading } from "./fonts";
 
 const SECTION_LABELS = {
   eyebrow: "Пациенты о нас",
@@ -43,8 +39,7 @@ export function ReviewsGrid({
             <span>{SECTION_LABELS.eyebrow}</span>
           </span>
           <h2
-            className="max-w-[14ch] text-[clamp(2.1rem,4vw,4rem)] leading-[0.98] tracking-[-0.045em] text-[var(--text)]"
-            style={headingStyle}
+            className={`max-w-[14ch] text-[clamp(2.1rem,4vw,4rem)] leading-[0.98] tracking-[-0.045em] text-[var(--text)] ${premiumHeading.className}`}
           >
             {testimonialsTitle}
           </h2>
@@ -67,16 +62,14 @@ export function ReviewsGrid({
                   {formatRating(review.rating)}
                 </span>
                 <span
-                  className="text-[2.2rem] leading-none text-[color-mix(in_oklab,var(--accent)_22%,black)]"
-                  style={headingStyle}
+                  className={`text-[2.2rem] leading-none text-[color-mix(in_oklab,var(--accent)_22%,black)] ${premiumHeading.className}`}
                 >
                   “
                 </span>
               </div>
 
               <p
-                className="text-[1.2rem] leading-8 text-[var(--text)] sm:text-[1.34rem]"
-                style={headingStyle}
+                className={`text-[1.2rem] leading-8 text-[var(--text)] sm:text-[1.34rem] ${premiumHeading.className}`}
               >
                 {review.comment}
               </p>

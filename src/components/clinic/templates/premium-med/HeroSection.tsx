@@ -1,11 +1,11 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { MessageCircle, PhoneCall } from "lucide-react";
 import { useBooking } from "@/context/BookingContext";
 import type { HeroSectionProps } from "@/components/clinic/template-props";
 import { toTelHref } from "@/components/clinic/utils";
 import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
+import { premiumHeading } from "./fonts";
 
 interface StatCard {
   readonly id: string;
@@ -16,10 +16,6 @@ interface StatCard {
   readonly suffix?: string;
   readonly delay: string;
 }
-
-const headingStyle: CSSProperties = {
-  fontFamily: "var(--font-heading), Georgia, serif",
-};
 
 const HERO_LABELS = {
   eyebrow: "Стоматология экспертного уровня",
@@ -98,8 +94,7 @@ export function HeroSection({
               </p>
 
               <h1
-                className="reveal mt-5 max-w-[13ch] text-[clamp(3rem,6.6vw,6.2rem)] leading-[0.94] tracking-[-0.055em] text-[var(--text)]"
-                style={headingStyle}
+                className={`reveal mt-5 max-w-[13ch] text-[clamp(3rem,6.6vw,6.2rem)] leading-[0.94] tracking-[-0.055em] text-[var(--text)] ${premiumHeading.className}`}
                 data-delay="1"
               >
                 {heroTitle}
@@ -141,8 +136,7 @@ export function HeroSection({
                     {HERO_LABELS.panelKicker}
                   </p>
                   <h2
-                    className="text-[1.5rem] leading-tight text-[var(--text)]"
-                    style={headingStyle}
+                    className={`text-[1.5rem] leading-tight text-[var(--text)] ${premiumHeading.className}`}
                   >
                     {HERO_LABELS.panelTitle}
                   </h2>
@@ -197,8 +191,7 @@ export function HeroSection({
                   data-animate-counters={hasCounter ? "true" : undefined}
                 >
                   <div
-                    className="flex items-end gap-1 text-[clamp(1.85rem,2.8vw,2.5rem)] leading-none tracking-[-0.06em] text-[var(--text)]"
-                    style={headingStyle}
+                    className={`flex items-end gap-1 text-[clamp(1.85rem,2.8vw,2.5rem)] leading-none tracking-[-0.06em] text-[var(--text)] ${premiumHeading.className}`}
                   >
                     {hasCounter ? (
                       <span

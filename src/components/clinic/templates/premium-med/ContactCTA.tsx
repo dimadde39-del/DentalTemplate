@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { Instagram, Mail, MapPin, MessageCircle, PhoneCall } from "lucide-react";
 import type { ContactCTAProps } from "@/components/clinic/template-props";
 import {
@@ -9,10 +8,7 @@ import {
   toWhatsAppHref,
 } from "@/components/clinic/utils";
 import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
-
-const headingStyle: CSSProperties = {
-  fontFamily: "var(--font-heading), Georgia, serif",
-};
+import { premiumHeading } from "./fonts";
 
 const SECTION_LABELS = {
   eyebrow: "Контакты",
@@ -47,16 +43,14 @@ export function ContactCTA({
               </span>
 
               <h2
-                className="mt-3 max-w-[16ch] text-[clamp(1.8rem,3vw,3.2rem)] leading-[1.02] tracking-[-0.04em] text-white"
-                style={headingStyle}
+                className={`mt-3 max-w-[16ch] text-[clamp(1.8rem,3vw,3.2rem)] leading-[1.02] tracking-[-0.04em] text-white ${premiumHeading.className}`}
               >
                 {SECTION_LABELS.title}
               </h2>
 
               <a
                 href={toTelHref(phone)}
-                className="mt-5 block text-[clamp(2rem,4vw,3.2rem)] leading-[0.94] tracking-[-0.05em] text-white transition-colors hover:text-white/82"
-                style={headingStyle}
+                className={`mt-5 block text-[clamp(2rem,4vw,3.2rem)] leading-[0.94] tracking-[-0.05em] text-white transition-colors hover:text-white/82 ${premiumHeading.className}`}
               >
                 {phone}
               </a>

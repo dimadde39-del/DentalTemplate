@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { useState } from "react";
 import type { DoctorsGridProps } from "@/components/clinic/template-props";
 import {
@@ -9,10 +8,7 @@ import {
   normalizeDoctorPhotoSrc,
 } from "@/components/clinic/utils";
 import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
-
-const headingStyle: CSSProperties = {
-  fontFamily: "var(--font-heading), Georgia, serif",
-};
+import { premiumHeading } from "./fonts";
 
 const SECTION_LABELS = {
   eyebrow: "Специалисты",
@@ -44,8 +40,7 @@ export function DoctorsGrid({
             <span>{SECTION_LABELS.eyebrow}</span>
           </span>
           <h2
-            className="max-w-[14ch] text-[clamp(2.1rem,4vw,4rem)] leading-[0.98] tracking-[-0.045em] text-[var(--text)]"
-            style={headingStyle}
+            className={`max-w-[14ch] text-[clamp(2.1rem,4vw,4rem)] leading-[0.98] tracking-[-0.045em] text-[var(--text)] ${premiumHeading.className}`}
           >
             {title?.trim() || SECTION_LABELS.title}
           </h2>
@@ -91,8 +86,7 @@ export function DoctorsGrid({
                 </div>
 
                 <h3
-                  className="mt-6 text-[1.32rem] leading-[1.18] text-[var(--text)]"
-                  style={headingStyle}
+                  className={`mt-6 text-[1.32rem] leading-[1.18] text-[var(--text)] ${premiumHeading.className}`}
                 >
                   {doctor.name}
                 </h3>

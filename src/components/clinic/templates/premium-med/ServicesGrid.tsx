@@ -1,21 +1,16 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { useBooking } from "@/context/BookingContext";
 import type { ServicesGridProps } from "@/components/clinic/template-props";
 import {
-  formatServicePrice,
   getVisibleServices,
   isBracketService,
   isFeaturedConsultation,
 } from "@/components/clinic/utils";
 import { useClinicSectionEffects } from "@/components/clinic/useClinicSectionEffects";
-
-const headingStyle: CSSProperties = {
-  fontFamily: "var(--font-heading), Georgia, serif",
-};
+import { premiumHeading } from "./fonts";
 
 const SECTION_LABELS = {
   eyebrow: "Услуги клиники",
@@ -30,6 +25,10 @@ const SECTION_LABELS = {
   bracesDescription:
     "Собираем ортодонтические решения в одной карточке, чтобы цены и различия было легко сравнить без перегрузки страницы.",
 } as const;
+
+function renderPrice(price: string | null | undefined): string {
+  return price?.trim() || "Цена по запросу";
+}
 
 export function ServicesGrid({
   services,
@@ -63,8 +62,7 @@ export function ServicesGrid({
             <span>{SECTION_LABELS.eyebrow}</span>
           </span>
           <h2
-            className="max-w-[14ch] text-[clamp(2.2rem,4vw,4.2rem)] leading-[0.98] tracking-[-0.045em] text-[var(--text)]"
-            style={headingStyle}
+            className={`max-w-[14ch] text-[clamp(2.2rem,4vw,4.2rem)] leading-[0.98] tracking-[-0.045em] text-[var(--text)] ${premiumHeading.className}`}
           >
             {title?.trim() || SECTION_LABELS.title}
           </h2>
@@ -86,8 +84,7 @@ export function ServicesGrid({
                     {SECTION_LABELS.featuredBadge}
                   </span>
                   <h3
-                    className="mt-4 max-w-[12ch] text-[clamp(2rem,3.8vw,3.2rem)] leading-[1] tracking-[-0.04em] text-[var(--text)]"
-                    style={headingStyle}
+                    className={`mt-4 max-w-[12ch] text-[clamp(2rem,3.8vw,3.2rem)] leading-[1] tracking-[-0.04em] text-[var(--text)] ${premiumHeading.className}`}
                   >
                     {featuredService.name}
                   </h3>
@@ -103,10 +100,9 @@ export function ServicesGrid({
                     {SECTION_LABELS.priceLabel}
                   </span>
                   <strong
-                    className="text-[1.9rem] leading-none tracking-[-0.05em] text-[var(--accent)]"
-                    style={headingStyle}
+                    className={`text-[1.9rem] leading-none tracking-[-0.05em] text-[var(--accent)] ${premiumHeading.className}`}
                   >
-                    {formatServicePrice(featuredService.price)}
+                    {renderPrice(featuredService.price)}
                   </strong>
                 </div>
               </div>
@@ -125,8 +121,7 @@ export function ServicesGrid({
                 >
                   <div className="flex items-start justify-between gap-4">
                     <h3
-                      className="max-w-[13ch] text-[1.34rem] leading-[1.14] text-[var(--text)]"
-                      style={headingStyle}
+                      className={`max-w-[13ch] text-[1.34rem] leading-[1.14] text-[var(--text)] ${premiumHeading.className}`}
                     >
                       {service.name}
                     </h3>
@@ -134,8 +129,8 @@ export function ServicesGrid({
                       <span className="block text-[0.72rem] uppercase tracking-[0.14em] text-[var(--muted)]">
                         {SECTION_LABELS.priceLabel}
                       </span>
-                      <span className="mt-2 block text-[1.2rem] font-medium leading-none text-[var(--accent)]">
-                        {formatServicePrice(service.price)}
+                      <span className={`mt-2 block text-[1.2rem] font-medium leading-none text-[var(--accent)] ${premiumHeading.className}`}>
+                        {renderPrice(service.price)}
                       </span>
                     </div>
                   </div>
@@ -181,8 +176,7 @@ export function ServicesGrid({
 
                     <div>
                       <h3
-                        className="text-[clamp(1.45rem,2vw,2rem)] leading-tight text-[var(--text)]"
-                        style={headingStyle}
+                        className={`text-[clamp(1.45rem,2vw,2rem)] leading-tight text-[var(--text)] ${premiumHeading.className}`}
                       >
                         {SECTION_LABELS.bracesTitle}
                       </h3>
@@ -223,8 +217,8 @@ export function ServicesGrid({
                           <p className="max-w-[20ch] text-sm font-medium text-[var(--text)] sm:text-base">
                             {service.name}
                           </p>
-                          <span className="shrink-0 text-[1.02rem] font-medium text-[var(--accent)]">
-                            {formatServicePrice(service.price)}
+                          <span className={`shrink-0 text-[1.02rem] font-medium text-[var(--accent)] ${premiumHeading.className}`}>
+                            {renderPrice(service.price)}
                           </span>
                         </div>
                         {service.description?.trim() ? (

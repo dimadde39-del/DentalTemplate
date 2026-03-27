@@ -14,8 +14,8 @@ const SECTION_LABELS = {
   eyebrow: "Специалисты",
   title: "Команда профильных врачей",
   subtitle:
-    "Ортодонтия, хирургия, имплантация и терапия объединены в одном клиническом стандарте и одной спокойной пациентской траектории.",
-  meta: "clinical practice",
+    "Ортодонтия, хирургия, имплантация и терапия объединены в едином клиническом стандарте и одной спокойной пациентской траектории.",
+  meta: "doctor-stom team",
 } as const;
 
 export function DoctorsGrid({
@@ -38,7 +38,7 @@ export function DoctorsGrid({
         <div className="mb-10 grid gap-5 border-b border-[var(--line)] pb-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,0.72fr)] lg:items-end">
           <div className="reveal">
             <span className="inline-flex items-center gap-3 text-[0.76rem] uppercase tracking-[0.22em] text-[var(--muted)]">
-              <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,var(--accent))]" />
+              <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,var(--accent),transparent)]" />
               <span>{SECTION_LABELS.eyebrow}</span>
             </span>
             <h2
@@ -61,16 +61,14 @@ export function DoctorsGrid({
             return (
               <article
                 key={doctor.id}
-                className="reveal flex min-h-[332px] flex-col rounded-[24px] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_22%,var(--line))] hover:shadow-[0_22px_34px_rgba(26,26,25,0.06)] sm:p-7"
+                className="group reveal flex min-h-[336px] flex-col rounded-[24px] border border-[var(--line)] bg-white p-6 shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[var(--line-strong)] hover:shadow-[0_24px_36px_rgba(26,26,25,0.055)] sm:p-7"
                 data-delay={String((index % 3) + 1)}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <span className="text-[0.72rem] uppercase tracking-[0.2em] text-[var(--muted)]">
-                    {SECTION_LABELS.meta}
-                  </span>
-                </div>
+                <span className="text-[0.72rem] uppercase tracking-[0.2em] text-[var(--muted)]">
+                  {SECTION_LABELS.meta}
+                </span>
 
-                <div className="mt-5 h-[108px] w-[108px] overflow-hidden rounded-[14px] border border-[var(--line)] bg-[linear-gradient(180deg,#F8F8F4,#F1F0EB)]">
+                <div className="mt-5 h-[112px] w-[112px] overflow-hidden rounded-[12px] border border-[var(--line)] bg-[linear-gradient(180deg,#FAF8F2,#F1EEE6)]">
                   {shouldShowPhoto ? (
                     <img
                       src={photoSrc ?? undefined}
@@ -85,9 +83,9 @@ export function DoctorsGrid({
                       }
                     />
                   ) : (
-                    <div className="grid h-full w-full place-items-center bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_10%,white),#F4F4EF)]">
+                    <div className="grid h-full w-full place-items-center bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_8%,white),#F5F2EC)]">
                       <span
-                        className={`text-[1.28rem] uppercase tracking-[0.08em] text-[var(--text)] ${premiumHeading.className}`}
+                        className={`text-[1.26rem] uppercase tracking-[0.08em] text-[var(--accent)] ${premiumHeading.className}`}
                       >
                         {getDoctorInitials(doctor.name)}
                       </span>
@@ -96,7 +94,7 @@ export function DoctorsGrid({
                 </div>
 
                 <h3
-                  className={`mt-6 text-[1.7rem] leading-[1.02] text-[var(--text)] ${premiumHeading.className}`}
+                  className={`mt-6 text-[1.72rem] leading-[1.02] text-[var(--text)] italic ${premiumHeading.className}`}
                 >
                   {doctor.name}
                 </h3>
@@ -109,6 +107,7 @@ export function DoctorsGrid({
 
                 <div className="mt-auto pt-6">
                   <div className="h-px w-full bg-[var(--line)]" />
+                  <div className="mt-3 h-[2px] w-0 bg-[var(--accent)] transition-all duration-300 ease-[var(--ease)] group-hover:w-full" />
                 </div>
               </article>
             );

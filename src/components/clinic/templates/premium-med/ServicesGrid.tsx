@@ -16,18 +16,19 @@ const SECTION_LABELS = {
   eyebrow: "Услуги клиники",
   title: "Полный спектр клинической стоматологии",
   subtitle:
-    "От первичной диагностики и терапии до ортодонтии, хирургии и имплантации в одном сдержанном медицинском контуре.",
-  featuredBadge: "Первичный прием",
+    "От первичной диагностики и терапии до ортодонтии, хирургии и имплантации — в едином спокойном клиническом стандарте.",
+  featuredBadge: "Первый шаг",
   priceLabel: "стоимость",
   moreLabel: "подробнее",
   bracesBadge: "Ортодонтия",
   bracesTitle: "Брекет-системы собраны в одном деликатном раскрывающемся блоке",
   bracesDescription:
     "Так легче сравнить варианты и обсудить лечение без перегруженной сетки и визуального шума.",
+  fallbackPrice: "Цена по запросу",
 } as const;
 
-function renderPrice(price: string | null | undefined): string {
-  return price?.trim() || "Цена по запросу";
+function getPrice(price: string | null | undefined): string {
+  return price?.trim() || SECTION_LABELS.fallbackPrice;
 }
 
 export function ServicesGrid({
@@ -56,14 +57,14 @@ export function ServicesGrid({
         ref={sectionRef}
         className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8"
       >
-        <div className="mb-10 grid gap-5 border-b border-[var(--line)] pb-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,0.7fr)] lg:items-end">
+        <div className="mb-10 grid gap-5 border-b border-[var(--line)] pb-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,0.7fr)] lg:items-end">
           <div className="reveal">
             <span className="inline-flex items-center gap-3 text-[0.76rem] uppercase tracking-[0.22em] text-[var(--muted)]">
-              <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,var(--accent))]" />
+              <span className="h-px w-10 bg-[linear-gradient(90deg,transparent,var(--accent),transparent)]" />
               <span>{SECTION_LABELS.eyebrow}</span>
             </span>
             <h2
-              className={`mt-4 max-w-[14ch] text-[clamp(2.45rem,4.4vw,4.9rem)] leading-[0.92] tracking-[-0.05em] text-[var(--text)] italic ${premiumHeading.className}`}
+              className={`mt-4 max-w-[14ch] text-[clamp(2.5rem,4.4vw,4.9rem)] leading-[0.92] tracking-[-0.05em] text-[var(--text)] italic ${premiumHeading.className}`}
             >
               {title?.trim() || SECTION_LABELS.title}
             </h2>
@@ -79,11 +80,13 @@ export function ServicesGrid({
             <button
               type="button"
               onClick={() => openBooking(featuredService.name)}
-              className="reveal group overflow-hidden rounded-[28px] border border-[var(--line)] bg-white p-7 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_22%,var(--line))] hover:shadow-[0_26px_36px_rgba(26,26,25,0.07)] sm:p-8 lg:p-10"
+              className="reveal relative overflow-hidden rounded-[28px] border border-[var(--line)] bg-white p-7 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[var(--line-strong)] hover:shadow-[0_24px_38px_rgba(26,26,25,0.06)] sm:p-8 lg:p-10"
             >
+              <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--accent),transparent)]" />
+
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
                 <div className="max-w-3xl">
-                  <span className="inline-flex min-h-9 items-center rounded-[999px] border border-[color-mix(in_oklab,var(--accent)_18%,var(--line))] bg-[color-mix(in_oklab,var(--accent)_6%,white)] px-3 text-[0.72rem] uppercase tracking-[0.18em] text-[var(--muted)]">
+                  <span className="inline-flex min-h-9 items-center rounded-[999px] border border-[var(--line)] bg-[var(--accent-pale)] px-3 text-[0.72rem] uppercase tracking-[0.18em] text-[var(--muted)]">
                     {SECTION_LABELS.featuredBadge}
                   </span>
 
@@ -100,14 +103,14 @@ export function ServicesGrid({
                   ) : null}
                 </div>
 
-                <div className="grid gap-3 rounded-[22px] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(243,242,238,0.72))] px-5 py-5">
+                <div className="grid gap-3 rounded-[20px] border border-[var(--line)] bg-[var(--surface-strong)] px-5 py-5">
                   <span className="text-[0.72rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                     {SECTION_LABELS.priceLabel}
                   </span>
                   <strong
                     className={`text-[2rem] leading-none tracking-[-0.05em] text-[var(--accent)] ${premiumHeading.className}`}
                   >
-                    {renderPrice(featuredService.price)}
+                    {getPrice(featuredService.price)}
                   </strong>
                 </div>
               </div>
@@ -115,18 +118,20 @@ export function ServicesGrid({
           ) : null}
 
           {regularServices.length > 0 ? (
-            <div className="grid gap-5 xl:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {regularServices.map((service, index) => (
                 <button
                   key={service.id}
                   type="button"
                   onClick={() => openBooking(service.name)}
-                  className="group reveal grid min-h-[220px] gap-6 rounded-[24px] border border-[var(--line)] bg-white p-6 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[color-mix(in_oklab,var(--accent)_22%,var(--line))] hover:shadow-[0_24px_34px_rgba(26,26,25,0.06)] sm:p-7"
-                  data-delay={String((index % 2) + 1)}
+                  className="group reveal relative overflow-hidden rounded-[24px] border border-[var(--line)] bg-white p-6 text-left shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-1 hover:border-[var(--line-strong)] hover:shadow-[0_24px_36px_rgba(26,26,25,0.055)] sm:p-7"
+                  data-delay={String((index % 3) + 1)}
                 >
+                  <div className="absolute inset-x-6 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--accent),transparent)]" />
+
                   <div className="flex items-start justify-between gap-5">
                     <h3
-                      className={`max-w-[14ch] text-[1.52rem] leading-[1.04] text-[var(--text)] italic ${premiumHeading.className}`}
+                      className={`max-w-[14ch] text-[1.55rem] leading-[1.04] text-[var(--text)] italic ${premiumHeading.className}`}
                     >
                       {service.name}
                     </h3>
@@ -136,22 +141,20 @@ export function ServicesGrid({
                         {SECTION_LABELS.priceLabel}
                       </span>
                       <span
-                        className={`mt-2 block text-[1.24rem] leading-none text-[var(--accent)] ${premiumHeading.className}`}
+                        className={`mt-2 block text-[1.2rem] leading-none text-[var(--accent)] ${premiumHeading.className}`}
                       >
-                        {renderPrice(service.price)}
+                        {getPrice(service.price)}
                       </span>
                     </div>
                   </div>
 
                   {service.description?.trim() ? (
-                    <p className="max-w-[54ch] text-sm leading-7 text-[var(--muted)] sm:text-[0.98rem]">
+                    <p className="mt-5 max-w-[54ch] text-sm leading-7 text-[var(--muted)] sm:text-[0.98rem]">
                       {service.description}
                     </p>
-                  ) : (
-                    <span />
-                  )}
+                  ) : null}
 
-                  <div className="mt-auto flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4 text-[0.76rem] uppercase tracking-[0.16em] text-[var(--muted)]">
+                  <div className="mt-6 flex items-center justify-between gap-4 border-t border-[var(--line)] pt-4 text-[0.76rem] uppercase tracking-[0.16em] text-[var(--muted)]">
                     <span>{SECTION_LABELS.moreLabel}</span>
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] border border-[var(--line)] text-[var(--text)] transition-all duration-300 ease-[var(--ease)] group-hover:border-[var(--accent)] group-hover:text-[var(--accent)]">
                       <ArrowUpRight className="h-4 w-4" />
@@ -164,12 +167,12 @@ export function ServicesGrid({
 
           {bracesServices.length > 0 ? (
             <article
-              className={`reveal overflow-hidden rounded-[28px] border bg-white shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] ${
-                isBracesOpen
-                  ? "border-[color-mix(in_oklab,var(--accent)_24%,var(--line))]"
-                  : "border-[var(--line)]"
+              className={`reveal relative overflow-hidden rounded-[28px] border bg-white shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease)] ${
+                isBracesOpen ? "border-[var(--line-strong)]" : "border-[var(--line)]"
               }`}
             >
+              <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--accent),transparent)]" />
+
               <button
                 type="button"
                 aria-expanded={isBracesOpen}
@@ -179,14 +182,14 @@ export function ServicesGrid({
               >
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                   <div className="grid gap-4">
-                    <span className="inline-flex min-h-9 w-fit items-center gap-2 rounded-[999px] border border-[color-mix(in_oklab,var(--accent)_18%,var(--line))] bg-[color-mix(in_oklab,var(--accent)_6%,white)] px-3 text-[0.72rem] uppercase tracking-[0.18em] text-[var(--muted)]">
+                    <span className="inline-flex min-h-9 w-fit items-center gap-2 rounded-[999px] border border-[var(--line)] bg-[var(--accent-pale)] px-3 text-[0.72rem] uppercase tracking-[0.18em] text-[var(--muted)]">
                       <Plus className="h-4 w-4 text-[var(--accent)]" />
                       <span>{SECTION_LABELS.bracesBadge}</span>
                     </span>
 
                     <div>
                       <h3
-                        className={`max-w-[18ch] text-[clamp(1.6rem,2.4vw,2.3rem)] leading-[1.02] text-[var(--text)] italic ${premiumHeading.className}`}
+                        className={`max-w-[18ch] text-[clamp(1.65rem,2.4vw,2.3rem)] leading-[1.02] text-[var(--text)] italic ${premiumHeading.className}`}
                       >
                         {SECTION_LABELS.bracesTitle}
                       </h3>
@@ -226,7 +229,7 @@ export function ServicesGrid({
                     {bracesServices.map((service) => (
                       <li
                         key={service.id}
-                        className="grid gap-3 rounded-[18px] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(243,242,238,0.72))] px-4 py-4"
+                        className="grid gap-3 rounded-[18px] border border-[var(--line)] bg-[var(--surface-strong)] px-4 py-4"
                       >
                         <div className="flex items-start justify-between gap-4">
                           <p className="max-w-[18ch] text-sm leading-6 text-[var(--text)] sm:text-[0.98rem]">
@@ -235,7 +238,7 @@ export function ServicesGrid({
                           <span
                             className={`shrink-0 text-[1.05rem] leading-none text-[var(--accent)] ${premiumHeading.className}`}
                           >
-                            {renderPrice(service.price)}
+                            {getPrice(service.price)}
                           </span>
                         </div>
 

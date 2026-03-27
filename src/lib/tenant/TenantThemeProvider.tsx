@@ -35,7 +35,7 @@ export function TenantThemeProvider({
 
   const backgroundStyle = {
     backgroundImage: isPremiumMed
-      ? "radial-gradient(circle at 82% 10%, var(--ambient), transparent 20%), linear-gradient(180deg, var(--page-top) 0%, var(--bg) 44%, var(--page-bottom) 100%)"
+      ? "radial-gradient(circle at 84% 9%, color-mix(in oklab, var(--accent) 7%, transparent), transparent 18%), linear-gradient(180deg, var(--page-top) 0%, var(--bg) 46%, var(--page-bottom) 100%)"
       : "radial-gradient(circle at 15% 15%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 22%), radial-gradient(circle at 82% 18%, var(--ambient), transparent 18%), linear-gradient(180deg, var(--page-top) 0%, var(--bg) 36%, var(--page-bottom) 100%)",
   } as React.CSSProperties;
 
@@ -62,12 +62,16 @@ export function TenantThemeProvider({
       className="relative min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={backgroundStyle} />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={gridStyle} />
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 ${isPremiumMed ? "" : "mix-blend-soft-light"}`}
-        style={noiseStyle}
-      />
+      {isPremiumMed ? null : (
+        <>
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={gridStyle} />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 mix-blend-soft-light"
+            style={noiseStyle}
+          />
+        </>
+      )}
       <div className="relative z-10 min-h-screen">{children}</div>
     </div>
   );

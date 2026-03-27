@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import {
   Cormorant_Garamond,
   DM_Sans,
-  DM_Serif_Display,
   Geist_Mono,
   Jura,
   Nunito,
@@ -43,16 +42,10 @@ const cormorantGaramond = Cormorant_Garamond({
   display: "swap",
 });
 
-const dmSerifDisplay = DM_Serif_Display({
-  variable: "--font-dm-serif-display",
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-});
-
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500"],
   display: "swap",
 });
 
@@ -75,7 +68,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${onest.variable} ${jura.variable} ${playfairDisplay.variable} ${nunito.variable} ${cormorantGaramond.variable} ${dmSerifDisplay.variable} ${dmSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
+        className={`${onest.variable} ${jura.variable} ${playfairDisplay.variable} ${nunito.variable} ${cormorantGaramond.variable} ${dmSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
       >
         {children}
       </body>

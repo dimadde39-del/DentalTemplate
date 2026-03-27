@@ -6,7 +6,6 @@ export type VariantFontName =
   | "Playfair Display"
   | "Nunito"
   | "Cormorant Garamond"
-  | "DM Serif Display"
   | "DM Sans";
 
 export interface ClinicVariantLabels {
@@ -60,7 +59,6 @@ export const FONT_VARIABLES: Record<VariantFontName, string> = {
   "Playfair Display": "var(--font-playfair-display)",
   Nunito: "var(--font-nunito)",
   "Cormorant Garamond": "var(--font-cormorant-garamond)",
-  "DM Serif Display": "var(--font-dm-serif-display)",
   "DM Sans": "var(--font-dm-sans)",
 };
 
@@ -186,23 +184,26 @@ export const VARIANTS = {
     fonts: { heading: "Cormorant Garamond", body: "DM Sans" },
     tokens: {
       "--bg": "#FAFAF8",
-      "--bg-soft": "#F3F2EE",
+      "--bg-soft": "#F3F1EC",
       "--surface": "#FFFFFF",
-      "--surface-strong": "#FFFFFF",
+      "--surface-strong": "#FFFEFC",
       "--line": "rgba(30,58,138,0.08)",
       "--line-strong": "rgba(30,58,138,0.16)",
       "--text": "#1A1A19",
       "--muted": "#7A7A72",
       "--muted-soft": "rgba(122,122,114,0.6)",
-      "--ambient": "rgba(30,58,138,0.04)",
+      "--accent-soft": "rgba(30,58,138,0.08)",
+      "--accent-pale": "rgba(30,58,138,0.045)",
+      "--accent-outline": "rgba(30,58,138,0.14)",
+      "--ambient": "rgba(30,58,138,0.035)",
       "--page-top": "#FDFCFA",
-      "--page-bottom": "#F5F4F0",
-      "--grid-line": "rgba(30,58,138,0.02)",
-      "--grid-opacity": "0.04",
-      "--noise-dot": "rgba(30,58,138,0.02)",
-      "--noise-opacity": "0.008",
-      "--shadow-soft": "0 24px 48px rgba(26,26,25,0.06)",
-      "--shadow-card": "0 14px 32px rgba(26,26,25,0.05)",
+      "--page-bottom": "#F4F2EC",
+      "--grid-line": "rgba(30,58,138,0.015)",
+      "--grid-opacity": "0.02",
+      "--noise-dot": "rgba(30,58,138,0.01)",
+      "--noise-opacity": "0",
+      "--shadow-soft": "0 30px 72px rgba(26,26,25,0.06)",
+      "--shadow-card": "0 18px 40px rgba(26,26,25,0.045)",
     },
     buttonShape: "rounded",
     headingStyle: "serif-italic",

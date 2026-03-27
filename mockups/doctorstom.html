@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor-Stom — premium medical mockup</title>
+    <meta
+      name="description"
+      content="Standalone HTML mockup for Doctor-Stom dental clinic landing page."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap&subset=latin,cyrillic"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fafaf7;
+        --bg-soft: #f2f0eb;
+        --surface: #ffffff;
+        --line: rgba(27, 67, 50, 0.12);
+        --line-strong: rgba(27, 67, 50, 0.22);
+        --text: #1a1a18;
+        --muted: #6b6b62;
+        --accent: #1b4332;
+        --accent-soft: rgba(27, 67, 50, 0.08);
+        --accent-mid: rgba(27, 67, 50, 0.15);
+        --shadow-soft: 0 26px 52px rgba(26, 26, 24, 0.055);
+        --shadow-card: 0 14px 28px rgba(26, 26, 24, 0.045);
+        --radius-xl: 28px;
+        --radius-lg: 18px;
+        --radius-md: 16px;
+        --container: 1240px;
+        --header-height: 82px;
+        --ease: cubic-bezier(0.2, 0.72, 0.18, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top right, rgba(27, 67, 50, 0.045), transparent 18%),
+          linear-gradient(180deg, #fdfdfb 0%, var(--bg) 34%, #f5f3ee 100%);
+        color: var(--text);
+        font-family: "DM Sans", Arial, sans-serif;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      .container {
+        width: min(100% - 40px, var(--container));
+        margin: 0 auto;
+      }
+
+      .serif {
+        font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+      }
+
+      .section {
+        padding: 120px 0 0;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent));
+      }
+
+      .section-head {
+        display: grid;
+        gap: 20px;
+        align-items: end;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 0.7fr);
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 34px;
+      }
+
+      .section-title {
+        margin: 16px 0 0;
+        font-size: clamp(2.55rem, 4.5vw, 5.1rem);
+        line-height: 0.92;
+        letter-spacing: -0.055em;
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      .section-copy {
+        margin: 0;
+        max-width: 34rem;
+        justify-self: end;
+        font-size: 1rem;
+        line-height: 1.9;
+        color: var(--muted);
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        transition:
+          background-color 220ms var(--ease),
+          border-color 220ms var(--ease),
+          backdrop-filter 220ms var(--ease),
+          box-shadow 220ms var(--ease);
+      }
+
+      .site-header::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 1px;
+        background: transparent;
+        transition: background 220ms var(--ease);
+      }
+
+      body.scrolled .site-header {
+        background: rgba(250, 250, 247, 0.74);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 10px 24px rgba(26, 26, 24, 0.04);
+      }
+
+      body.scrolled .site-header::after {
+        background: var(--line);
+      }
+
+      .header-inner {
+        height: var(--header-height);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .header-phone {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 20px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition:
+          transform 200ms var(--ease),
+          border-color 200ms var(--ease),
+          background-color 200ms var(--ease),
+          color 200ms var(--ease),
+          box-shadow 200ms var(--ease);
+        cursor: pointer;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-outline {
+        border-color: var(--line-strong);
+        background: rgba(255, 255, 255, 0.64);
+        color: var(--accent);
+      }
+
+      .button-outline:hover {
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .button-fill {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #ffffff;
+        box-shadow: 0 18px 28px rgba(27, 67, 50, 0.14);
+      }
+
+      .button-fill:hover {
+        background: #153628;
+      }
+
+      .button-ghost-dark {
+        border-color: rgba(255, 255, 255, 0.24);
+        color: #ffffff;
+        background: transparent;
+      }
+
+      .button-ghost-dark:hover {
+        border-color: rgba(255, 255, 255, 0.48);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .hero-shell {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 34px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.82)),
+          var(--surface);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .hero-shell::before {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border-radius: 24px;
+        border: 1px solid rgba(27, 67, 50, 0.05);
+        pointer-events: none;
+      }
+
+      .hero-shell::after {
+        content: "";
+        position: absolute;
+        top: -80px;
+        right: -60px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(27, 67, 50, 0.08), transparent 70%);
+        pointer-events: none;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        gap: 48px;
+        padding: 44px 42px 30px;
+      }
+
+      .hero-title {
+        margin: 18px 0 0;
+        max-width: 11ch;
+        font-size: clamp(3.4rem, 7vw, 7rem);
+        line-height: 0.88;
+        letter-spacing: -0.065em;
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      .hero-copy {
+        max-width: 40rem;
+        margin: 22px 0 0;
+        font-size: 1.02rem;
+        line-height: 1.9;
+        color: var(--muted);
+      }
+
+      .hero-cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .hero-panel {
+        padding-top: 8px;
+      }
+
+      .line-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 26px;
+        padding: 28px;
+        background:
+          radial-gradient(circle at top right, rgba(255, 255, 255, 0.05), transparent 24%),
+          #1a1a18;
+        color: #ffffff;
+        box-shadow: 0 22px 36px rgba(26, 26, 24, 0.14);
+      }
+
+      .line-card::after {
+        content: "";
+        position: absolute;
+        inset: auto 28px 0;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent);
+      }
+
+      .line-kicker {
+        font-size: 0.74rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.54);
+      }
+
+      .line-title {
+        margin: 12px 0 0;
+        font-size: 2.1rem;
+        line-height: 0.98;
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      .line-list {
+        display: grid;
+        gap: 12px;
+        margin: 24px 0 0;
+      }
+
+      .line-item {
+        padding: 16px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .line-label {
+        display: block;
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.48);
+      }
+
+      .line-value {
+        display: block;
+        margin-top: 8px;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
+      .line-note {
+        margin: 18px 0 0;
+        color: rgba(255, 255, 255, 0.56);
+        line-height: 1.8;
+      }
+
+      .hero-divider {
+        height: 1px;
+        margin: 0 42px;
+        background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0;
+        padding: 24px 42px 32px;
+      }
+
+      .stat {
+        padding: 0 20px;
+        border-right: 1px solid var(--line);
+      }
+
+      .stat:last-child {
+        border-right: 0;
+      }
+
+      .stat-value {
+        font-size: clamp(2rem, 3.2vw, 3rem);
+        line-height: 1;
+        letter-spacing: -0.06em;
+      }
+
+      .stat-label {
+        margin: 10px 0 0;
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .services-grid,
+      .doctors-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        position: relative;
+        background: var(--surface);
+        border: 1px solid var(--accent-soft);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        transition:
+          transform 200ms var(--ease),
+          border-color 200ms var(--ease),
+          box-shadow 200ms var(--ease);
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: var(--line-strong);
+      }
+
+      .service-card {
+        padding: 24px 22px 22px;
+      }
+
+      .service-card::before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 22px;
+        right: 22px;
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent), rgba(27, 67, 50, 0.2));
+      }
+
+      .service-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 18px;
+      }
+
+      .service-name {
+        margin: 0;
+        font-size: 1.02rem;
+        font-weight: 500;
+        line-height: 1.5;
+      }
+
+      .service-price {
+        font-size: 1.45rem;
+        line-height: 1;
+        letter-spacing: -0.05em;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      .service-copy {
+        margin: 14px 0 0;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+
+      .service-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid var(--accent-soft);
+        color: var(--muted);
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .accordion-card {
+        grid-column: 1 / -1;
+        overflow: hidden;
+      }
+
+      .accordion-trigger {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        color: inherit;
+      }
+
+      .accordion-inner {
+        padding: 24px 22px;
+      }
+
+      .accordion-panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 260ms var(--ease);
+        border-top: 1px solid transparent;
+      }
+
+      .accordion-card.is-open .accordion-panel {
+        grid-template-rows: 1fr;
+        border-top-color: var(--accent-soft);
+      }
+
+      .accordion-content {
+        overflow: hidden;
+      }
+
+      .brace-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        padding-top: 18px;
+      }
+
+      .brace-option {
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid var(--accent-soft);
+        background: linear-gradient(180deg, #fff, #fbfbf8);
+      }
+
+      .brace-option strong {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+
+      .brace-option span {
+        color: var(--accent);
+        font-size: 1.25rem;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      .accordion-toggle {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 1px solid var(--accent-soft);
+        display: inline-grid;
+        place-items: center;
+        flex-shrink: 0;
+        transition:
+          transform 200ms var(--ease),
+          border-color 200ms var(--ease),
+          color 200ms var(--ease);
+      }
+
+      .accordion-card.is-open .accordion-toggle {
+        transform: rotate(45deg);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .doctor-card {
+        padding: 22px;
+        overflow: hidden;
+      }
+
+      .doctor-avatar {
+        width: 82px;
+        height: 82px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 1.2rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .doctor-name {
+        margin: 18px 0 0;
+        font-size: 1.04rem;
+        line-height: 1.5;
+        font-weight: 500;
+      }
+
+      .doctor-role {
+        margin: 10px 0 0;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .doctor-accent {
+        margin-top: 22px;
+        height: 2px;
+        width: 44px;
+        background: transparent;
+        transition:
+          width 200ms var(--ease),
+          background-color 200ms var(--ease);
+      }
+
+      .doctor-card:hover .doctor-accent {
+        width: 100%;
+        background: var(--accent);
+      }
+
+      .reviews-shell {
+        position: relative;
+        overflow: hidden;
+        mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+      }
+
+      .marquee {
+        display: flex;
+        gap: 18px;
+        width: max-content;
+        animation: marquee 34s linear infinite;
+      }
+
+      .reviews-shell:hover .marquee {
+        animation-play-state: paused;
+      }
+
+      .review-card {
+        width: 360px;
+        min-height: 250px;
+        padding: 24px;
+      }
+
+      .review-quote {
+        font-size: 4rem;
+        line-height: 0.9;
+        color: var(--accent);
+      }
+
+      .review-text {
+        margin: 12px 0 0;
+        font-size: 1.52rem;
+        line-height: 1.45;
+        font-style: italic;
+      }
+
+      .review-author {
+        margin: 26px 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .cta {
+        padding-bottom: 60px;
+      }
+
+      .cta-shell {
+        border-radius: 30px;
+        background:
+          radial-gradient(circle at top right, rgba(27, 67, 50, 0.2), transparent 18%),
+          #1a1a18;
+        color: #ffffff;
+        padding: 42px;
+        box-shadow: 0 28px 48px rgba(26, 26, 24, 0.16);
+      }
+
+      .cta-title {
+        margin: 14px 0 0;
+        max-width: 12ch;
+        font-size: clamp(2.6rem, 4.8vw, 5rem);
+        line-height: 0.92;
+        letter-spacing: -0.05em;
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      .cta-copy {
+        margin: 18px 0 0;
+        max-width: 42rem;
+        color: rgba(255, 255, 255, 0.68);
+        line-height: 1.85;
+      }
+
+      .cta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .cta-meta {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.62);
+        line-height: 1.9;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition:
+          opacity 700ms var(--ease),
+          transform 700ms var(--ease);
+      }
+
+      .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .stagger > * {
+        transition-delay: calc(var(--stagger-index, 0) * 0.1s);
+      }
+
+      @keyframes marquee {
+        from {
+          transform: translateX(0);
+        }
+
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .hero-grid,
+        .section-head {
+          grid-template-columns: 1fr;
+        }
+
+        .section-copy {
+          justify-self: start;
+        }
+
+        .services-grid,
+        .doctors-grid,
+        .brace-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .stats-row {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          row-gap: 24px;
+        }
+
+        .stat:nth-child(2) {
+          border-right: 0;
+        }
+
+        .stat:nth-child(3),
+        .stat:nth-child(4) {
+          padding-top: 20px;
+          border-top: 1px solid var(--line);
+        }
+      }
+
+      @media (max-width: 768px) {
+        :root {
+          --header-height: auto;
+        }
+
+        .section {
+          padding-top: 88px;
+        }
+
+        .container {
+          width: min(100% - 24px, var(--container));
+        }
+
+        .header-inner {
+          height: auto;
+          padding: 16px 0;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .header-actions {
+          width: 100%;
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .header-phone {
+          font-size: 0.9rem;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        .hero-grid {
+          gap: 28px;
+          padding: 30px 18px 24px;
+        }
+
+        .hero-divider,
+        .stats-row {
+          margin: 0 18px;
+          padding-left: 0;
+          padding-right: 0;
+        }
+
+        .stats-row {
+          grid-template-columns: 1fr;
+          padding-top: 22px;
+          padding-bottom: 26px;
+        }
+
+        .stat {
+          padding: 0;
+          border-right: 0;
+          border-top: 1px solid var(--line);
+          padding-top: 18px;
+        }
+
+        .stat:first-child {
+          border-top: 0;
+          padding-top: 0;
+        }
+
+        .services-grid,
+        .doctors-grid,
+        .brace-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .service-head {
+          flex-direction: column;
+        }
+
+        .review-card {
+          width: min(86vw, 320px);
+          min-height: 220px;
+        }
+
+        .cta-shell {
+          padding: 28px 18px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .reveal,
+        .card,
+        .button,
+        .accordion-panel,
+        .accordion-toggle,
+        .doctor-accent,
+        .site-header {
+          transition: none !important;
+        }
+
+        .reveal {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+
+        .marquee {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="#hero" class="brand">DOCTOR-STOM</a>
+
+        <div class="header-actions">
+        <a class="header-phone" href="tel:+77772379585">+7 777 237 95 85</a>
+          <a class="button button-outline" href="#cta">Записаться</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal" id="hero">
+        <div class="container">
+          <div class="hero-shell">
+            <div class="hero-grid">
+              <div>
+                <span class="eyebrow">Doctor-Stom · Алматы</span>
+                <h1 class="hero-title serif">
+                  Стоматология, которой доверяют с 1998 года
+                </h1>
+                <p class="hero-copy">
+                  Doctor-Stom — клиника в Алматы с 26-летней историей. Ортодонтия,
+                  хирургия, имплантация и терапия в одном спокойном, собранном
+                  медицинском стандарте.
+                </p>
+
+                <div class="hero-cta">
+                  <a class="button button-fill" href="#cta">Записаться на приём</a>
+          <a class="button button-outline" href="tel:+77772379585">Позвонить</a>
+                </div>
+              </div>
+
+              <aside class="hero-panel">
+                <div class="line-card">
+                  <div class="line-kicker">Прямая линия</div>
+                  <h2 class="line-title serif">Контакт с клиникой без лишних шагов</h2>
+
+                  <div class="line-list">
+                    <div class="line-item">
+                      <span class="line-label">Телефон</span>
+              <span class="line-value">+7 777 237 95 85</span>
+                    </div>
+                    <div class="line-item">
+                      <span class="line-label">Формат</span>
+                      <span class="line-value">WhatsApp или звонок</span>
+                    </div>
+                    <div class="line-item">
+                      <span class="line-label">Первый этап</span>
+                      <span class="line-value">Консультация и план лечения</span>
+                    </div>
+                  </div>
+
+                  <p class="line-note">
+                    Спокойно скоординируем первый визит и поможем понять, к какому
+                    специалисту лучше обратиться сразу.
+                  </p>
+                </div>
+              </aside>
+            </div>
+
+            <div class="hero-divider"></div>
+
+            <div class="stats-row">
+              <div class="stat">
+                <div
+                  class="stat-value serif"
+                  data-counter
+                  data-target="800"
+                  data-suffix="+"
+                >
+                  0
+                </div>
+                <p class="stat-label">Отзывов</p>
+              </div>
+
+              <div class="stat">
+                <div
+                  class="stat-value serif"
+                  data-counter
+                  data-target="4.9"
+                  data-decimals="1"
+                  data-suffix=" ★"
+                >
+                  0
+                </div>
+                <p class="stat-label">Рейтинг</p>
+              </div>
+
+              <div class="stat">
+                <div class="stat-value serif" data-counter data-target="6">0</div>
+                <p class="stat-label">Врачей</p>
+              </div>
+
+              <div class="stat">
+                <div class="stat-value serif" data-counter data-target="26">0</div>
+                <p class="stat-label">Лет</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="services">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <span class="eyebrow">Услуги клиники</span>
+              <h2 class="section-title serif">Полный спектр современной стоматологии</h2>
+            </div>
+            <p class="section-copy">
+              Диагностика, терапия, хирургия, ортодонтия и имплантация собраны в
+              одном выверенном медицинском маршруте.
+            </p>
+          </div>
+
+          <div class="services-grid stagger">
+            <article class="card service-card reveal" style="--stagger-index: 0">
+              <div class="service-head">
+                <h3 class="service-name">Консультация терапевта</h3>
+                <div class="service-price serif">2 000 – 3 000 ₸</div>
+              </div>
+              <p class="service-copy">Осмотр, первичная диагностика и план лечения.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Терапия</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 1">
+              <div class="service-head">
+                <h3 class="service-name">Профессиональная гигиена</h3>
+                <div class="service-price serif">от 8 000 ₸</div>
+              </div>
+              <p class="service-copy">Air Flow, ультразвук и профилактика перед лечением.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Профилактика</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 2">
+              <div class="service-head">
+                <h3 class="service-name">Лечение кариеса</h3>
+                <div class="service-price serif">от 29 000 ₸</div>
+              </div>
+              <p class="service-copy">Световые пломбы и деликатное восстановление зуба.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Терапия</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 3">
+              <div class="service-head">
+                <h3 class="service-name">Лечение пульпита</h3>
+                <div class="service-price serif">от 35 000 ₸</div>
+              </div>
+              <p class="service-copy">Эндодонтическое лечение с сохранением зуба.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Эндодонтия</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 4">
+              <div class="service-head">
+                <h3 class="service-name">Панорамный снимок (ОПТГ)</h3>
+                <div class="service-price serif">6 500 ₸</div>
+              </div>
+              <p class="service-copy">Быстрая цифровая диагностика перед консультацией.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Диагностика</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 5">
+              <div class="service-head">
+                <h3 class="service-name">3D КТ-снимок</h3>
+                <div class="service-price serif">13 500 – 14 500 ₸</div>
+              </div>
+              <p class="service-copy">Объёмная диагностика для хирургии и имплантации.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Диагностика</span></div>
+            </article>
+
+            <article
+              class="card accordion-card reveal"
+              style="--stagger-index: 6"
+              data-accordion
+            >
+              <button class="accordion-trigger" type="button" aria-expanded="false">
+                <div class="accordion-inner">
+                  <div class="service-head">
+                    <div>
+                      <h3 class="service-name">Брекет-системы</h3>
+                      <p class="service-copy">
+                        Все варианты собраны в одной карточке, чтобы сравнить решения без перегрузки.
+                      </p>
+                    </div>
+                    <div class="accordion-toggle" aria-hidden="true">+</div>
+                  </div>
+                </div>
+              </button>
+              <div class="accordion-panel">
+                <div class="accordion-content">
+                  <div class="accordion-inner" style="padding-top: 0">
+                    <div class="brace-grid">
+                      <div class="brace-option">
+                        <strong>Металлические</strong>
+                        <span class="serif">от 80 000 ₸</span>
+                      </div>
+                      <div class="brace-option">
+                        <strong>Керамические</strong>
+                        <span class="serif">от 120 000 ₸</span>
+                      </div>
+                      <div class="brace-option">
+                        <strong>Самолигирующие</strong>
+                        <span class="serif">от 200 000 ₸</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 7">
+              <div class="service-head">
+                <h3 class="service-name">Элайнеры / каппы</h3>
+                <div class="service-price serif">по консультации</div>
+              </div>
+              <p class="service-copy">Прозрачное выравнивание для спокойной повседневной носки.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Ортодонтия</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 8">
+              <div class="service-head">
+                <h3 class="service-name">Виниры</h3>
+                <div class="service-price serif">от 75 000 ₸</div>
+              </div>
+              <p class="service-copy">Керамические решения для аккуратной эстетической реставрации.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Эстетика</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 9">
+              <div class="service-head">
+                <h3 class="service-name">Имплантация Alfa-Bio / Osstem</h3>
+                <div class="service-price serif">95 000 – 180 000 ₸</div>
+              </div>
+              <p class="service-copy">Надёжные системы для восстановительной хирургии.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Имплантация</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 10">
+              <div class="service-head">
+                <h3 class="service-name">Имплантация премиум</h3>
+                <div class="service-price serif">от 325 000 ₸</div>
+              </div>
+              <p class="service-copy">Премиальные системы с расширенной клинической тактикой.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Имплантация</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 11">
+              <div class="service-head">
+                <h3 class="service-name">Хирургия</h3>
+                <div class="service-price serif">по консультации</div>
+              </div>
+              <p class="service-copy">Удаление, костная пластика и подготовка к имплантации.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Хирургия</span></div>
+            </article>
+
+            <article class="card service-card reveal" style="--stagger-index: 12">
+              <div class="service-head">
+                <h3 class="service-name">Ортопедия / протезирование</h3>
+                <div class="service-price serif">по прайсу</div>
+              </div>
+              <p class="service-copy">Коронки, мосты и комплексные ортопедические решения.</p>
+              <div class="service-meta"><span>Doctor-Stom</span><span>Ортопедия</span></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="doctors">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <span class="eyebrow">Специалисты</span>
+              <h2 class="section-title serif">Команда профильных врачей</h2>
+            </div>
+            <p class="section-copy">
+              Главный врач, ортодонты, хирурги и терапевты работают в едином клиническом
+              ритме и с одним уровнем ответственности за результат.
+            </p>
+          </div>
+
+          <div class="doctors-grid stagger">
+            <article class="card doctor-card reveal" style="--stagger-index: 0">
+              <div class="doctor-avatar serif">РР</div>
+              <h3 class="doctor-name">Рузиев Раухат Амержанович</h3>
+              <p class="doctor-role">Главный врач, ортодонт</p>
+              <div class="doctor-accent"></div>
+            </article>
+
+            <article class="card doctor-card reveal" style="--stagger-index: 1">
+              <div class="doctor-avatar serif">СЛ</div>
+              <h3 class="doctor-name">Сулейменова Лаура Сериковна</h3>
+              <p class="doctor-role">Миофункциональный ортодонт</p>
+              <div class="doctor-accent"></div>
+            </article>
+
+            <article class="card doctor-card reveal" style="--stagger-index: 2">
+              <div class="doctor-avatar serif">ЕТ</div>
+              <h3 class="doctor-name">Ермаков Тимофей Сергеевич</h3>
+              <p class="doctor-role">Стоматолог-терапевт</p>
+              <div class="doctor-accent"></div>
+            </article>
+
+            <article class="card doctor-card reveal" style="--stagger-index: 3">
+              <div class="doctor-avatar serif">МА</div>
+              <h3 class="doctor-name">Мартынов Алексей Владимирович</h3>
+              <p class="doctor-role">Хирург-имплантолог</p>
+              <div class="doctor-accent"></div>
+            </article>
+
+            <article class="card doctor-card reveal" style="--stagger-index: 4">
+              <div class="doctor-avatar serif">СА</div>
+              <h3 class="doctor-name">Силкина Алёна Сергеевна</h3>
+              <p class="doctor-role">Стоматолог-терапевт</p>
+              <div class="doctor-accent"></div>
+            </article>
+
+            <article class="card doctor-card reveal" style="--stagger-index: 5">
+              <div class="doctor-avatar serif">СН</div>
+              <h3 class="doctor-name">Столяренко Никита Алексеевич</h3>
+              <p class="doctor-role">Челюстно-лицевой хирург</p>
+              <div class="doctor-accent"></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="reviews">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <span class="eyebrow">Пациенты о нас</span>
+              <h2 class="section-title serif">Отзывы, которые говорят спокойно и точно</h2>
+            </div>
+            <p class="section-copy">
+              Более 800 отзывов, 4.9 ★ и репутация, которая складывалась 26 лет,
+              а не за один маркетинговый сезон.
+            </p>
+          </div>
+
+          <div class="reviews-shell reveal">
+            <div class="marquee" id="review-track">
+              <article class="card review-card">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Рузиев Раухат Амержанович — лучший ортодонт! Результат брекетов
+                  превзошёл все ожидания.
+                </p>
+                <p class="review-author">Айгерим К.</p>
+              </article>
+
+              <article class="card review-card">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Мартынов Алексей — золотые руки, импланты поставил идеально.
+                  Клиника работает 26 лет и это чувствуется.
+                </p>
+                <p class="review-author">Дмитрий С.</p>
+              </article>
+
+              <article class="card review-card">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Прекрасный коллектив, чувствуется опыт. Спасибо Алёне Сергеевне
+                  за безболезненное лечение.
+                </p>
+                <p class="review-author">Марина Т.</p>
+              </article>
+
+              <article class="card review-card">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Столяренко Никита — профи в ортогнатической хирургии, всё
+                  объяснил и результат отличный.
+                </p>
+                <p class="review-author">Бауыржан А.</p>
+              </article>
+
+              <article class="card review-card">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Хожу в Doctor-Stom 10 лет, вся семья лечится здесь. Надёжная
+                  клиника с человеческим отношением.
+                </p>
+                <p class="review-author">Наталья Р.</p>
+              </article>
+
+              <article class="card review-card" aria-hidden="true">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Рузиев Раухат Амержанович — лучший ортодонт! Результат брекетов
+                  превзошёл все ожидания.
+                </p>
+                <p class="review-author">Айгерим К.</p>
+              </article>
+
+              <article class="card review-card" aria-hidden="true">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Мартынов Алексей — золотые руки, импланты поставил идеально.
+                  Клиника работает 26 лет и это чувствуется.
+                </p>
+                <p class="review-author">Дмитрий С.</p>
+              </article>
+
+              <article class="card review-card" aria-hidden="true">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Прекрасный коллектив, чувствуется опыт. Спасибо Алёне Сергеевне
+                  за безболезненное лечение.
+                </p>
+                <p class="review-author">Марина Т.</p>
+              </article>
+
+              <article class="card review-card" aria-hidden="true">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Столяренко Никита — профи в ортогнатической хирургии, всё
+                  объяснил и результат отличный.
+                </p>
+                <p class="review-author">Бауыржан А.</p>
+              </article>
+
+              <article class="card review-card" aria-hidden="true">
+                <div class="review-quote serif">“</div>
+                <p class="review-text serif">
+                  Хожу в Doctor-Stom 10 лет, вся семья лечится здесь. Надёжная
+                  клиника с человеческим отношением.
+                </p>
+                <p class="review-author">Наталья Р.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section cta" id="cta">
+        <div class="container">
+          <div class="cta-shell reveal">
+            <span class="eyebrow" style="color: rgba(255, 255, 255, 0.62)">
+              Первый визит
+            </span>
+            <h2 class="cta-title serif">Запишитесь на первый приём</h2>
+            <p class="cta-copy">
+              Оставьте заявку, и администратор Doctor-Stom поможет подобрать
+              удобное время, формат связи и нужного специалиста без лишних звонков.
+            </p>
+
+            <div class="cta-actions">
+          <a class="button button-fill" href="https://wa.me/77772379585" target="_blank" rel="noreferrer">
+                WhatsApp
+              </a>
+          <a class="button button-ghost-dark" href="tel:+77772379585">Позвонить</a>
+            </div>
+
+            <div class="cta-meta">
+            +7 777 237 95 85 · dstom@mail.ru · мкр Керемет, 6к23, Алматы ·
+              @doctorstom_kz
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const root = document.body;
+      const headerThreshold = 16;
+      const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const toggleScrolled = () => {
+        root.classList.toggle("scrolled", window.scrollY > headerThreshold);
+      };
+
+      toggleScrolled();
+      window.addEventListener("scroll", toggleScrolled, { passive: true });
+
+      const revealItems = document.querySelectorAll(".reveal");
+      if (!motionReduced && "IntersectionObserver" in window) {
+        const revealObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.18, rootMargin: "0px 0px -10% 0px" }
+        );
+
+        revealItems.forEach((item) => revealObserver.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add("is-visible"));
+      }
+
+      const counters = document.querySelectorAll("[data-counter]");
+      const formatCounter = (value, decimals, suffix) => {
+        const output = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toString();
+        return output + suffix;
+      };
+
+      if (!motionReduced && "IntersectionObserver" in window) {
+        const counterObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+
+              const el = entry.target;
+              const target = Number(el.dataset.target || 0);
+              const decimals = Number(el.dataset.decimals || 0);
+              const suffix = el.dataset.suffix || "";
+              const duration = 1400;
+              const start = performance.now();
+
+              const tick = (now) => {
+                const progress = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = formatCounter(target * eased, decimals, suffix);
+                if (progress < 1) {
+                  requestAnimationFrame(tick);
+                } else {
+                  el.textContent = formatCounter(target, decimals, suffix);
+                }
+              };
+
+              requestAnimationFrame(tick);
+              observer.unobserve(el);
+            });
+          },
+          { threshold: 0.5 }
+        );
+
+        counters.forEach((counter) => counterObserver.observe(counter));
+      } else {
+        counters.forEach((el) => {
+          const target = Number(el.dataset.target || 0);
+          const decimals = Number(el.dataset.decimals || 0);
+          const suffix = el.dataset.suffix || "";
+          el.textContent = formatCounter(target, decimals, suffix);
+        });
+      }
+
+      document.querySelectorAll("[data-accordion]").forEach((accordion) => {
+        const button = accordion.querySelector(".accordion-trigger");
+        button.addEventListener("click", () => {
+          const isOpen = accordion.classList.toggle("is-open");
+          button.setAttribute("aria-expanded", String(isOpen));
+        });
+      });
+    </script>
+  </body>
+</html>

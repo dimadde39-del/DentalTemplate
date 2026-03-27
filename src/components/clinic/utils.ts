@@ -1,4 +1,27 @@
-import { ClinicDoctor, ClinicReview, ClinicService } from "@/config/site";
+import type { ClinicDoctor, ClinicReview, ClinicService } from "@/config/site";
+
+const PRICE_FORMATTER = new Intl.NumberFormat("ru-RU", {
+  maximumFractionDigits: 2,
+});
+
+const REVIEW_WORD_PATTERN = new RegExp(
+  "(\\d[\\d\\s]*)\\s*(\\+)?\\s*\\u043E\\u0442\\u0437\\u044B\\u0432",
+  "iu"
+);
+
+const RATING_PATTERN = new RegExp(
+  "(?:\\u0440\\u0435\\u0439\\u0442\\u0438\\u043D\\u0433(?:\\u043E\\u043C)?\\s*)?(\\d[.,]\\d)",
+  "iu"
+);
+
+function formatNumericAmount(value: string): string | null {
+  if (!/^\d[\d\s]*(?:[.,]\d+)?$/.test(value)) return null;
+
+  const amount = Number(value.replace(/\s+/g, "").replace(",", "."));
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+
+  return PRICE_FORMATTER.format(amount);
+}
 
 export function toTelHref(phone: string): string {
   return `tel:${phone.replace(/[^\d+]/g, "")}`;
@@ -50,29 +73,57 @@ export function normalizeDoctorPhotoSrc(photoUrl: string | null | undefined): st
 
 export function formatServicePrice(price: string | null | undefined): string {
   const raw = price?.trim();
-  if (!raw) return "Цена по запросу";
+  if (!raw) return "\u0426\u0435\u043D\u0430 \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443";
 
-  const digits = raw.replace(/[^\d]/g, "");
-  if (!digits) return raw;
+  const normalized = raw.replace(/\u00A0/g, " ").replace(/\s+/g, " ").trim();
 
-  const amount = Number(digits);
-  if (!Number.isFinite(amount) || amount <= 0) return raw;
+  const rangeMatch = normalized.match(
+    /^(\d[\d\s]*(?:[.,]\d+)?)\s*[–—-]\s*(\d[\d\s]*(?:[.,]\d+)?)\s*(?:₸|тг)?$/iu
+  );
+  if (rangeMatch) {
+    const start = formatNumericAmount(rangeMatch[1]);
+    const end = formatNumericAmount(rangeMatch[2]);
 
-  const formatted = `${Math.trunc(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
-  const isApproximate = /(^|\s)(от|from)|[~+]|[-–—]/i.test(raw);
+    if (start && end) {
+      return `${start} – ${end} ₸`;
+    }
+  }
 
-  return isApproximate ? `от ${formatted}` : formatted;
+  const approximateMatch = normalized.match(
+    /^(от|from)\s+(\d[\d\s]*(?:[.,]\d+)?)\s*(?:₸|тг)?$/iu
+  );
+  if (approximateMatch) {
+    const amount = formatNumericAmount(approximateMatch[2]);
+
+    if (amount) {
+      return `${approximateMatch[1].toLowerCase() === "from" ? "from" : "от"} ${amount} ₸`;
+    }
+  }
+
+  const exactMatch = normalized.match(/^(\d[\d\s]*(?:[.,]\d+)?)\s*(?:₸|тг)?$/iu);
+  if (exactMatch) {
+    const amount = formatNumericAmount(exactMatch[1]);
+
+    if (amount) {
+      return `${amount} ₸`;
+    }
+  }
+
+  return normalized;
 }
 
 export function isBracketService(service: Pick<ClinicService, "name">): boolean {
-  return service.name.trim().toLowerCase().includes("брекет");
+  return service.name.trim().toLowerCase().includes("\u0431\u0440\u0435\u043A\u0435\u0442");
 }
 
 export function isFeaturedConsultation(service: ClinicService): boolean {
   const name = service.name.trim().toLowerCase();
   const price = service.price?.trim().toLowerCase() ?? "";
 
-  return name.includes("консультац") || price.includes("бесплат");
+  return (
+    name.includes("\u043A\u043E\u043D\u0441\u0443\u043B\u044C\u0442\u0430\u0446") ||
+    price.includes("\u0431\u0435\u0441\u043F\u043B\u0430\u0442")
+  );
 }
 
 export function getAverageRating(reviews: readonly ClinicReview[]): number | null {
@@ -90,7 +141,7 @@ export function extractReviewCount(
   texts: readonly (string | null | undefined)[]
 ): { value: number | null; suffix: string } {
   for (const text of texts) {
-    const match = text?.match(/(\d[\d\s]*)\s*(\+)?\s*отзыв/iu);
+    const match = text?.match(REVIEW_WORD_PATTERN);
     if (!match) continue;
 
     const digits = match[1].replace(/[^\d]/g, "");
@@ -107,7 +158,7 @@ export function extractReviewCount(
 
 export function extractRating(texts: readonly (string | null | undefined)[]): number | null {
   for (const text of texts) {
-    const match = text?.match(/(?:рейтинг(?:ом)?\s*)?(\d[.,]\d)/iu);
+    const match = text?.match(RATING_PATTERN);
     if (!match) continue;
 
     const value = Number(match[1].replace(",", "."));

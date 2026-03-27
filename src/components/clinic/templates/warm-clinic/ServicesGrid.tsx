@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useBooking } from "@/context/BookingContext";
 import type { ServicesGridProps } from "@/components/clinic/template-props";
 import {
-  formatServicePrice,
   getVisibleServices,
   isBracketService,
   isFeaturedConsultation,
@@ -108,7 +107,7 @@ export function ServicesGrid({
                     {SECTION_LABELS.priceLabel}
                   </span>
                   <strong className="text-[2rem] leading-none tracking-[-0.05em] text-[var(--text)]">
-                    {formatServicePrice(featuredService.price)}
+                    {featuredService.price}
                   </strong>
                 </div>
               </div>
@@ -130,7 +129,7 @@ export function ServicesGrid({
                       {getServiceIndex(index)}
                     </span>
                     <span className="text-[1.35rem] leading-none tracking-[-0.05em] text-[var(--text)]">
-                      {formatServicePrice(service.price)}
+                      {service.price}
                     </span>
                   </div>
 
@@ -226,7 +225,7 @@ export function ServicesGrid({
                           </p>
                         ) : null}
                         <span className="mt-3 block text-[1.18rem] leading-none text-[var(--text)]">
-                          {formatServicePrice(service.price)}
+                          {service.price}
                         </span>
                       </li>
                     ))}

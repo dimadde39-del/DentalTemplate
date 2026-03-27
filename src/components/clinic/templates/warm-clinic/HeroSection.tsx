@@ -123,9 +123,9 @@ export function HeroSection({
                   <button
                     type="button"
                     onClick={() => openBooking()}
-                    className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--accent)_32%,transparent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--accent)_18%,white),color-mix(in_oklab,var(--accent)_12%,white))] px-6 text-sm font-semibold text-[var(--text)] shadow-[0_18px_32px_color-mix(in_oklab,var(--accent)_14%,transparent)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:border-[var(--accent)]"
+                    className="inline-flex min-h-13 items-center justify-center gap-2 rounded-full border border-transparent bg-[var(--accent)] px-6 text-sm font-semibold text-white opacity-100 shadow-[0_18px_32px_color-mix(in_oklab,var(--accent)_24%,transparent)] transition-all duration-300 ease-[var(--ease)] hover:-translate-y-0.5 hover:bg-[color-mix(in_oklab,var(--accent)_90%,black)]"
                   >
-                    <MessageCircle className="h-4 w-4 text-[var(--accent)]" />
+                    <MessageCircle className="h-4 w-4 text-white" />
                     <span>{HERO_LABELS.primaryCta}</span>
                   </button>
 

@@ -200,7 +200,7 @@ export function HeroSection({
                     data-delay={stat.delay}
                     data-animate-counters={hasCounter ? "true" : undefined}
                   >
-                    <div className="flex min-w-0 items-end gap-1 text-[clamp(1.8rem,2.7vw,2.4rem)] leading-none tracking-[-0.07em] text-[var(--text)]">
+                    <div className="flex w-full min-w-0 items-end gap-1 text-[clamp(1.8rem,2.7vw,2.4rem)] leading-none tracking-[-0.07em] text-[var(--text)]">
                       {hasCounter ? (
                         <span
                           data-counter=""
@@ -214,7 +214,7 @@ export function HeroSection({
                         <span
                           className={
                             stat.id === "instagram"
-                              ? "block min-w-0 truncate"
+                              ? "block w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
                               : undefined
                           }
                         >
